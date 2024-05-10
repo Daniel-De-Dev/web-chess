@@ -1,0 +1,19 @@
+{
+  "name": "web-chess",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Starting build...' && tsc && postcss src/css/* --dir dist/css/ && echo 'Build complete.'",
+    "watch": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "Daniel-De-Dev",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "cssnano": "^7.0.1",
+    "postcss": "^8.4.38",
+    "postcss-cli": "^11.0.0"
+  }
+}

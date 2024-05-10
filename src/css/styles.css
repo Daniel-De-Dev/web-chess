@@ -1,0 +1,45 @@
+
+:root {
+    --cell-size: 80px;
+    --board-size: calc(var(--cell-size) * 8);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000;
+    overflow: hidden;
+}
+
+body {
+    justify-content: center;
+}
+
+#chessboard {
+    display: grid;
+    grid-template-rows: repeat(8, var(--cell-size));
+    grid-template-columns: repeat(8, var(--cell-size));
+    width: var(--board-size);
+    height: var(--board-size);
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+}
+
+.black {
+    background: brown;
+}
+
+.white {
+    background: blanchedalmond;
+}
+
+.piece {
+    width: var(--cell-size);
+    height: var(--cell-size);
+}
