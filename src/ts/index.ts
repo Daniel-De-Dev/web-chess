@@ -82,14 +82,62 @@ function handlePieceClick(event: Event) {
         event.stopPropagation(); // Prevent other events from getting triggered
         clickedPiece.classList.add('selected');
         board.dataset['highlightedCell'] = `${posX}-${posY}`;
-        
 
+        // Display the pieces legal moves
+        displayLegalMoves(clickedPiece);
 
         return;
     }
 }
 
+function displayLegalMoves(piece: HTMLElement) {
 
+    let cellLists: Number[][] = [];
+    const pieceType = piece.dataset['piece'];
+    if (!pieceType) {
+        console.error('The provided piece has no label for itself', piece);
+        return;
+    }
+
+    const posX = parseInt(piece.dataset['positionX'] ?? "-1", 10);
+    const posY = parseInt(piece.dataset['positionY'] ?? "-1", 10);
+    if (posX === -1 || posY === -1) {
+        console.error(`Getting the clicked piece's coordinates failed (x,y: ${posX},${posY})`, piece);
+        return;
+    }
+
+    if (pieceType === "king") {
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                if (y === x && x === 1) { //! Check for bounds 
+                    continue;
+                }
+                
+                cellLists.push([x+posX-1, y+posY-1]);
+
+            }
+        }
+    }
+    
+    // Sliding piece
+
+    // Non-Sliding
+
+    cellLists.forEach(coordinate => {
+        const dot = document.createElement('div');
+        if (dot) {
+            dot.classList.add('dot');
+            dot.addEventListener('click', handleDotClick);
+            dot.dataset['positionX'] = `${coordinate[0]}`;
+            dot.dataset['positionY'] = `${coordinate[1]}`;
+            const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
+            if (cell) {
+                cell.appendChild(dot);
+            }
+        }
+    });
+
+}
 
 function handleCellClick() {
     const board = document.getElementById('chessboard');
@@ -114,16 +162,58 @@ function handleCellClick() {
             const dots = document.querySelectorAll('.dot');
 
             dots.forEach(dot => {
-            dot.remove();    
+                dot.remove();    
             });
         }
     }
 }
     
-    
-
 function handleDotClick(event: Event) {
     event.stopPropagation(); 
-    //! Remember to update board info
-    console.log('Clicked Dot');
+
+    const clickedDot = event.target as HTMLElement;
+
+    const originPiece = document.querySelector('.selected') as HTMLElement;
+    if (!originPiece) {
+        console.error('failed to find a element with the class "selected"', clickedDot);
+        return;
+    }
+
+    const dotX = clickedDot.dataset['positionX'];
+    const dotY = clickedDot.dataset['positionY'];
+
+    if (dotX === undefined) {
+        console.error('Failed to retrieve a dots X position', clickedDot);
+        return;
+    }
+
+    if (dotY === undefined) {
+        console.error('Failed to retrieve a dots y position', clickedDot);
+        return;
+    }
+
+    const newCell = document.getElementById(`${dotX}-${dotY}`);
+    if (!newCell) {
+        console.error('For some reason no such cell exists', clickedDot);
+        return;
+    }
+
+    originPiece.classList.remove('selected');
+    originPiece.dataset['positionX'] = dotX;
+    originPiece.dataset['positionY'] = dotY;
+    
+
+    const board = document.getElementById(`chessboard`) as HTMLElement;
+    if (board) {
+        board.dataset['highlightedCell'] = '';
+    }
+    
+
+    newCell.appendChild(originPiece);
+
+    const dots = document.querySelectorAll('.dot');
+
+    dots.forEach(dot => {
+        dot.remove();    
+    });
 }
