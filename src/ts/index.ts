@@ -39,6 +39,20 @@ document.addEventListener('DOMContentLoaded', function() {
         test.appendChild(img);
     }
 
+    let test2 = document.getElementById('3-3');
+
+    if (test2) {
+        const img = document.createElement('img');
+        img.classList.add('piece');
+        img.src = './assets/king-b.svg';
+        img.dataset['positionX'] = '3';
+        img.dataset['positionY'] = '3';
+        img.dataset['piece'] = 'king';
+        img.dataset['color'] = 'black';
+        test2.appendChild(img);
+    }
+
+
 
     // Add Click event to all pieces on board
     const pieces = document.querySelectorAll('.piece');
@@ -56,14 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function handlePieceClick(event: Event) {
     const clickedPiece = event.target as HTMLElement;
     
-    // Get the position for the clicked piece
-    const posX = parseInt(clickedPiece.dataset['positionX'] ?? "-1", 10);
-    const posY = parseInt(clickedPiece.dataset['positionY'] ?? "-1", 10);
-    if (posX === -1 || posY === -1) {
-        console.error(`Getting the clicked piece's coordinates failed (x,y: ${posX},${posY})`, clickedPiece);
-        return;
-    }
-    
     const board = document.getElementById('chessboard');
     if (!board) {
         console.error('couldn\'t get the Chessboard Element');
@@ -76,17 +82,24 @@ function handlePieceClick(event: Event) {
         console.error('Failed to retrieve data of highlighted cell from chessboard', board);
         return;
     } 
-
+    
     if (highlighted_cell.length === 0) {
         // There are no actively highlighted cells on the board
         event.stopPropagation(); // Prevent other events from getting triggered
+
+        // Get the position for the clicked piece
+        const posX = parseInt(clickedPiece.dataset['positionX'] ?? "-1", 10);
+        const posY = parseInt(clickedPiece.dataset['positionY'] ?? "-1", 10);
+        if (posX === -1 || posY === -1) {
+            console.error(`Getting the clicked piece's coordinates failed (x,y: ${posX},${posY})`, clickedPiece);
+            return;
+        }
+
         clickedPiece.classList.add('selected');
         board.dataset['highlightedCell'] = `${posX}-${posY}`;
 
         // Display the pieces legal moves
         displayLegalMoves(clickedPiece);
-
-        return;
     }
 }
 
@@ -109,12 +122,10 @@ function displayLegalMoves(piece: HTMLElement) {
     if (pieceType === "king") {
         for (let y = 0; y < 3; y++) {
             for (let x = 0; x < 3; x++) {
-                if (y === x && x === 1) { //! Check for bounds 
-                    continue;
+                if (y === x && x === 1) {
+                    continue; // Skips the square the piece it self is on
                 }
-                
                 cellLists.push([x+posX-1, y+posY-1]);
-
             }
         }
     }
@@ -132,11 +143,19 @@ function displayLegalMoves(piece: HTMLElement) {
             dot.dataset['positionY'] = `${coordinate[1]}`;
             const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
             if (cell) {
-                cell.appendChild(dot);
+
+                const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+                if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                    // an enemy is located on this cell
+                    dot.classList.add('capture');
+                    cell.appendChild(dot);
+                } else if (!cellOccupant) {
+                    // empty cell
+                    cell.appendChild(dot);
+                }
             }
         }
     });
-
 }
 
 function handleCellClick() {
@@ -208,7 +227,13 @@ function handleDotClick(event: Event) {
         board.dataset['highlightedCell'] = '';
     }
     
-
+    if (clickedDot.classList.contains('capture')) {
+        const enemyPiece = newCell.querySelector('.piece');
+        if (enemyPiece) {
+            enemyPiece.remove();
+        }        
+    }
+    
     newCell.appendChild(originPiece);
 
     const dots = document.querySelectorAll('.dot');
