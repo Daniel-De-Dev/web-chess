@@ -25,34 +25,84 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add a test piece to the board //! TEMP
-    let test = document.getElementById('4-4');
+    const cell1 = document.getElementById('4-4');
 
-    if (test) {
-        const img = document.createElement('img');
-        img.classList.add('piece');
-        img.src = './assets/king-w.svg';
-        img.alt = 'white king';
-        img.dataset['positionX'] = '4';
-        img.dataset['positionY'] = '4';
-        img.dataset['piece'] = 'king';
-        img.dataset['color'] = 'white';
-        test.appendChild(img);
+    if (cell1) {
+        const kingW = document.createElement('img');
+        kingW.classList.add('piece');
+        kingW.src = './assets/king-w.svg';
+        kingW.alt = 'white king';
+        kingW.dataset['positionX'] = '4';
+        kingW.dataset['positionY'] = '4';
+        kingW.dataset['piece'] = 'king';
+        kingW.dataset['color'] = 'white';
+        cell1.appendChild(kingW);
     }
 
-    let test2 = document.getElementById('3-3');
+    const cell2 = document.getElementById('0-0');
 
-    if (test2) {
-        const img = document.createElement('img');
-        img.classList.add('piece');
-        img.src = './assets/king-b.svg';
-        img.dataset['positionX'] = '3';
-        img.dataset['positionY'] = '3';
-        img.dataset['piece'] = 'king';
-        img.dataset['color'] = 'black';
-        test2.appendChild(img);
+    if (cell2) {
+        const kingB = document.createElement('img');
+        kingB.classList.add('piece');
+        kingB.src = './assets/king-b.svg';
+        kingB.dataset['positionX'] = '0';
+        kingB.dataset['positionY'] = '0';
+        kingB.dataset['piece'] = 'king';
+        kingB.dataset['color'] = 'black';
+        cell2.appendChild(kingB);
     }
 
+    const cell3 = document.getElementById('0-4');
+    
+    if (cell3) {
+        const rookW = document.createElement('img');
+        rookW.classList.add('piece');
+        rookW.src = './assets/rook-w.svg';
+        rookW.dataset['positionX'] = '0';
+        rookW.dataset['positionY'] = '4';
+        rookW.dataset['piece'] = 'rook';
+        rookW.dataset['color'] = 'white';
+        cell3.appendChild(rookW);
+    }
 
+    const cell4 = document.getElementById('2-2');
+    
+    if (cell4) {
+        const bishopW = document.createElement('img');
+        bishopW.classList.add('piece');
+        bishopW.src = './assets/bishop-w.svg';
+        bishopW.dataset['positionX'] = '2';
+        bishopW.dataset['positionY'] = '2';
+        bishopW.dataset['piece'] = 'bishop';
+        bishopW.dataset['color'] = 'white';
+        cell4.appendChild(bishopW);
+    }
+
+    const cell5 = document.getElementById('4-0');
+    
+    if (cell5) {
+        const queenW = document.createElement('img');
+        queenW.classList.add('piece');
+        queenW.src = './assets/queen-w.svg';
+        queenW.dataset['positionX'] = '4';
+        queenW.dataset['positionY'] = '0';
+        queenW.dataset['piece'] = 'queen';
+        queenW.dataset['color'] = 'white';
+        cell5.appendChild(queenW);
+    }
+
+    const cell6 = document.getElementById('1-2');
+    
+    if (cell6) {
+        const queenW = document.createElement('img');
+        queenW.classList.add('piece');
+        queenW.src = './assets/knight-w.svg';
+        queenW.dataset['positionX'] = '1';
+        queenW.dataset['positionY'] = '2';
+        queenW.dataset['piece'] = 'knight';
+        queenW.dataset['color'] = 'white';
+        cell6.appendChild(queenW);
+    }
 
     // Add Click event to all pieces on board
     const pieces = document.querySelectorAll('.piece');
@@ -99,40 +149,372 @@ function handlePieceClick(event: Event) {
         board.dataset['highlightedCell'] = `${posX}-${posY}`;
 
         // Display the pieces legal moves
-        displayLegalMoves(clickedPiece);
+        displayMoves(clickedPiece);
     }
 }
 
-function displayLegalMoves(piece: HTMLElement) {
-
+function getPossibleMoves(piece: HTMLElement): Number[][] {
     let cellLists: Number[][] = [];
+    
     const pieceType = piece.dataset['piece'];
     if (!pieceType) {
         console.error('The provided piece has no label for itself', piece);
-        return;
+        return [];
     }
 
     const posX = parseInt(piece.dataset['positionX'] ?? "-1", 10);
     const posY = parseInt(piece.dataset['positionY'] ?? "-1", 10);
     if (posX === -1 || posY === -1) {
         console.error(`Getting the clicked piece's coordinates failed (x,y: ${posX},${posY})`, piece);
-        return;
-    }
-
-    if (pieceType === "king") {
-        for (let y = 0; y < 3; y++) {
-            for (let x = 0; x < 3; x++) {
-                if (y === x && x === 1) {
-                    continue; // Skips the square the piece it self is on
-                }
-                cellLists.push([x+posX-1, y+posY-1]);
-            }
-        }
+        return [];
     }
     
-    // Sliding piece
+    if (pieceType === 'king') { //! Add king blocked moves later
+        for (let y = 0; y < 3; y++) {
+            for (let x = 0; x < 3; x++) {
+                const cell = document.getElementById(`${x+posX-1}-${y+posY-1}`);
+                if (cell) {
+                    const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+                    if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                        cellLists.push([x+posX-1, y+posY-1]);
+                    }
+                }
+            }
+        }
+    } else if (pieceType === 'rook') {
 
-    // Non-Sliding
+        let lastPos = [posX, posY];
+        while (true) {
+            lastPos[1]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+    } else if (pieceType === 'bishop') {
+
+        let lastPos = [posX, posY];
+        while (true) {
+            lastPos[1]--;
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++;
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]--;
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+    } else if (pieceType === 'queen') {
+        let lastPos = [posX, posY];
+        while (true) {
+            lastPos[1]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+        while (true) {
+            lastPos[1]--;
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++
+            lastPos[0]++;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]++;
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+
+        lastPos = [posX, posY];
+
+        while (true) {
+            lastPos[1]--;
+            lastPos[0]--;
+            const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
+            if (!cell) {
+                break; // We are out of bounds
+            }
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+                continue;
+            } 
+            break;
+        }
+    } else if (pieceType === 'knight') {
+        let cell = document.getElementById(`${posX-1}-${posY-2}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX-1, posY-2]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX+1}-${posY-2}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX+1, posY-2]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX+2}-${posY-1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX+2, posY-1]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX+2}-${posY+1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX+2, posY+1]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX+1}-${posY+2}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX+1, posY+2]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX-1}-${posY+2}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX-1, posY+2]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX-2}-${posY+1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX-2, posY+1]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX-2}-${posY-1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX-2, posY-1]);
+            } 
+        }
+    }
+    return cellLists;
+}
+
+function displayMoves(piece: HTMLElement) {
+
+    const cellLists = getPossibleMoves(piece);
 
     cellLists.forEach(coordinate => {
         const dot = document.createElement('div');
