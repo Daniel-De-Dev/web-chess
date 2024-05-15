@@ -1,10 +1,19 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
+    //! TODO:
+    // Fix that a king can move backwards while still being checked (logic fault that he's blocking himself)
+    //1. Add Checks
+    //2. Add Add logic for forced check moves
+    //3. Add Castling (also check logic)
+    //4. Add Pawn Special Move (also check logic)
+    //5. Add Opposite pawn movement logic
+    //6. Flip board function 
+
     if (board) {
 
-        board.dataset['highlightedCell'] = "";
+        board.dataset['highlightedCell'] = '';
+        board.dataset['direction'] = '1'
 
         // Generate each cell of the board
         for (let row = 0; row < 8; row++) {
@@ -104,6 +113,20 @@ document.addEventListener('DOMContentLoaded', function() {
         cell6.appendChild(queenW);
     }
 
+    const cell7 = document.getElementById('1-6');
+
+    if (cell7) {
+        const pawnW = document.createElement('img');
+        pawnW.classList.add('piece');
+        pawnW.src = './assets/pawn-w.svg';
+        pawnW.dataset['positionX'] = '1';
+        pawnW.dataset['positionY'] = '6';
+        pawnW.dataset['firstMove'] = '1';
+        pawnW.dataset['piece'] = 'pawn';
+        pawnW.dataset['color'] = 'black';
+        cell7.appendChild(pawnW);
+    }
+
     // Add Click event to all pieces on board
     const pieces = document.querySelectorAll('.piece');
     pieces.forEach(piece => {
@@ -174,10 +197,7 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             for (let x = 0; x < 3; x++) {
                 const cell = document.getElementById(`${x+posX-1}-${y+posY-1}`);
                 if (cell) {
-                    const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                    if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                        cellLists.push([x+posX-1, y+posY-1]);
-                    }
+                    cellLists.push([x+posX-1, y+posY-1]);
                 }
             }
         }
@@ -191,11 +211,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -207,11 +224,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -223,11 +237,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -239,11 +250,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
     } else if (pieceType === 'bishop') {
 
@@ -256,11 +264,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -273,11 +278,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -290,11 +292,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -307,11 +306,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (cellOccupant) {break};
         }
 
     } else if (pieceType === 'queen') {
@@ -323,11 +319,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -339,11 +332,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -355,11 +345,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -371,11 +358,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -387,11 +371,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -404,11 +385,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -421,11 +399,8 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -438,83 +413,113 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                continue;
-            } 
-            break;
+                if (cellOccupant) {break};
         }
     } else if (pieceType === 'knight') {
         let cell = document.getElementById(`${posX-1}-${posY-2}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX-1, posY-2]);
-            } 
         }
 
         cell = document.getElementById(`${posX+1}-${posY-2}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX+1, posY-2]);
-            } 
         }
 
         cell = document.getElementById(`${posX+2}-${posY-1}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX+2, posY-1]);
-            } 
         }
 
         cell = document.getElementById(`${posX+2}-${posY+1}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX+2, posY+1]);
-            } 
         }
 
         cell = document.getElementById(`${posX+1}-${posY+2}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX+1, posY+2]);
-            } 
         }
 
         cell = document.getElementById(`${posX-1}-${posY+2}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX-1, posY+2]);
-            } 
         }
 
         cell = document.getElementById(`${posX-2}-${posY+1}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX-2, posY+1]);
-            } 
         }
 
         cell = document.getElementById(`${posX-2}-${posY-1}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant || cellOccupant.dataset['color'] !== piece.dataset['color']) {
                 cellLists.push([posX-2, posY-1]);
+        }
+    } else if (pieceType === 'pawn') {
+        let cell = document.getElementById(`${posX}-${posY-1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (!cellOccupant) {
+                cellLists.push([posX, posY-1]);
+                if (parseInt(piece.dataset['firstMove'] ?? "0", 10)) {
+                    cell = document.getElementById(`${posX}-${posY-2}`);
+                    if (cell) {
+                        const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+                        if (!cellOccupant) {
+                            cellLists.push([posX, posY-2]);
+                        } 
+                    }
+                }
             } 
         }
+
+        cell = document.getElementById(`${posX-1}-${posY-1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX-1, posY-1]);
+            } 
+        }
+
+        cell = document.getElementById(`${posX+1}-${posY-1}`);
+        if (cell) {
+            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+            if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                cellLists.push([posX+1, posY-1]);
+            } 
+        }
+
+
     }
     return cellLists;
 }
 
 function displayMoves(piece: HTMLElement) {
 
-    const cellLists = getPossibleMoves(piece);
+    let cellLists: Number[][] = [];
+    
+    if (piece.dataset['piece'] === 'king') {
+        const allPieces = document.querySelectorAll('.piece');
+        let tempList = getPossibleMoves(piece).map(coord => coord.join('-'));
+        let allOpponentMoves: String[] = [];
+        
+        allPieces.forEach(p => {
+            const htmlElement = p as HTMLElement;
+            if (piece.dataset['color'] !== htmlElement.dataset['color']) {
+                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement).map(coord => coord.join('-'))])];
+            }
+        });
+        
+        tempList = tempList.filter(value => !allOpponentMoves.includes(value));
+        tempList.forEach(s => {
+            let value = s.split('-');
+            cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
+        });
+    } else {
+        cellLists = getPossibleMoves(piece);
+    }
 
     cellLists.forEach(coordinate => {
         const dot = document.createElement('div');
@@ -523,6 +528,7 @@ function displayMoves(piece: HTMLElement) {
             dot.addEventListener('click', handleDotClick);
             dot.dataset['positionX'] = `${coordinate[0]}`;
             dot.dataset['positionY'] = `${coordinate[1]}`;
+            dot.dataset['fromPiece'] = `${piece.dataset['piece']}`;
             const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
             if (cell) {
 
@@ -574,7 +580,7 @@ function handleDotClick(event: Event) {
 
     const clickedDot = event.target as HTMLElement;
 
-    const originPiece = document.querySelector('.selected') as HTMLElement;
+    const originPiece = document.querySelector('.selected') as HTMLImageElement;
     if (!originPiece) {
         console.error('failed to find a element with the class "selected"', clickedDot);
         return;
@@ -597,6 +603,16 @@ function handleDotClick(event: Event) {
     if (!newCell) {
         console.error('For some reason no such cell exists', clickedDot);
         return;
+    }
+
+    if (clickedDot.dataset['fromPiece'] === 'pawn') {
+        originPiece.dataset['firstMove'] = '0';
+
+        if (dotY === '0') {
+            originPiece.dataset['firstMove'] = '';
+            originPiece.dataset['piece'] = 'queen'
+            originPiece.src = `./assets/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
+        }
     }
 
     originPiece.classList.remove('selected');
