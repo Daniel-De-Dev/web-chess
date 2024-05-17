@@ -2,7 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    // Fix that a king can move backwards while still being checked (logic fault that he's blocking himself)
+    // Idea for pinning moves
+    // A piece needs to be checked for its moving will result in a check
+    // Board will know when a active check exists, it will only allow moves to avoid check or block check
+    // Need to handle edge case where piece could capture the checking piece
     //1. Add Checks
     //2. Add Add logic for forced check moves
     //3. Add Castling (also check logic)
@@ -176,7 +179,7 @@ function handlePieceClick(event: Event) {
     }
 }
 
-function getPossibleMoves(piece: HTMLElement): Number[][] {
+function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][] {
     let cellLists: Number[][] = [];
     
     const pieceType = piece.dataset['piece'];
@@ -212,7 +215,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -225,7 +230,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -238,7 +246,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -251,7 +261,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
     } else if (pieceType === 'bishop') {
 
@@ -265,7 +277,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -279,7 +293,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -293,7 +309,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -307,7 +325,9 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (cellOccupant) {break};
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
     } else if (pieceType === 'queen') {
@@ -319,8 +339,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -332,8 +354,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -345,8 +369,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -358,8 +384,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -371,8 +399,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -385,8 +415,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -399,8 +431,10 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
 
         lastPos = [posX, posY];
@@ -413,13 +447,14 @@ function getPossibleMoves(piece: HTMLElement): Number[][] {
                 break; // We are out of bounds
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-                if (cellOccupant) {break};
+            cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
+            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+                continue;
+            } else if (cellOccupant) {break};
         }
     } else if (pieceType === 'knight') {
         let cell = document.getElementById(`${posX-1}-${posY-2}`);
         if (cell) {
-            const cellOccupant = cell.querySelector('.piece') as HTMLElement;
                 cellLists.push([posX-1, posY-2]);
         }
 
@@ -502,13 +537,13 @@ function displayMoves(piece: HTMLElement) {
     
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
-        let tempList = getPossibleMoves(piece).map(coord => coord.join('-'));
+        let tempList = getPossibleMoves(piece, false).map(coord => coord.join('-'));
         let allOpponentMoves: String[] = [];
         
         allPieces.forEach(p => {
             const htmlElement = p as HTMLElement;
             if (piece.dataset['color'] !== htmlElement.dataset['color']) {
-                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement).map(coord => coord.join('-'))])];
+                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, true).map(coord => coord.join('-'))])];
             }
         });
         
@@ -518,7 +553,7 @@ function displayMoves(piece: HTMLElement) {
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
     } else {
-        cellLists = getPossibleMoves(piece);
+        cellLists = getPossibleMoves(piece, false);
     }
 
     cellLists.forEach(coordinate => {
@@ -639,4 +674,4 @@ function handleDotClick(event: Event) {
     dots.forEach(dot => {
         dot.remove();    
     });
-}
+} 
