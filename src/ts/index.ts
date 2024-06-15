@@ -36,98 +36,63 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Add a test piece to the board //! TEMP
-    const cell1 = document.getElementById('4-4');
+    const startBoard: { [key: string]: string } = {
+        "0-0" : "rook",
+        "1-0" : "knight",
+        "2-0" : "bishop",
+        "3-0" : "queen", 
+        "4-0" : "king",
+        "5-0" : "bishop",
+        "6-0" : "knight",
+        "7-0" : "rook",
+        "0-1" : "pawn",
+        "1-1" : "pawn",
+        "2-1" : "pawn",
+        "3-1" : "pawn", 
+        "4-1" : "pawn",
+        "5-1" : "pawn",
+        "6-1" : "pawn",
+        "7-1" : "pawn",
+        "0-7" : "rook",
+        "1-7" : "knight",
+        "2-7" : "bishop",
+        "3-7" : "queen", 
+        "4-7" : "king",
+        "5-7" : "bishop",
+        "6-7" : "knight",
+        "7-7" : "rook",
+        "0-6" : "pawn",
+        "1-6" : "pawn",
+        "2-6" : "pawn",
+        "3-6" : "pawn", 
+        "4-6" : "pawn",
+        "5-6" : "pawn",
+        "6-6" : "pawn",
+        "7-6" : "pawn",
+    };
 
-    if (cell1) {
-        const kingW = document.createElement('img');
-        kingW.classList.add('piece');
-        kingW.src = './assets/king-w.svg';
-        kingW.alt = 'white king';
-        kingW.dataset['positionX'] = '4';
-        kingW.dataset['positionY'] = '4';
-        kingW.dataset['piece'] = 'king';
-        kingW.dataset['color'] = 'white';
-        cell1.appendChild(kingW);
-    }
-
-    const cell2 = document.getElementById('0-0');
-
-    if (cell2) {
-        const kingB = document.createElement('img');
-        kingB.classList.add('piece');
-        kingB.src = './assets/king-b.svg';
-        kingB.dataset['positionX'] = '0';
-        kingB.dataset['positionY'] = '0';
-        kingB.dataset['piece'] = 'king';
-        kingB.dataset['color'] = 'black';
-        cell2.appendChild(kingB);
-    }
-
-    const cell3 = document.getElementById('0-4');
-    
-    if (cell3) {
-        const rookW = document.createElement('img');
-        rookW.classList.add('piece');
-        rookW.src = './assets/rook-w.svg';
-        rookW.dataset['positionX'] = '0';
-        rookW.dataset['positionY'] = '4';
-        rookW.dataset['piece'] = 'rook';
-        rookW.dataset['color'] = 'white';
-        cell3.appendChild(rookW);
-    }
-
-    const cell4 = document.getElementById('2-2');
-    
-    if (cell4) {
-        const bishopW = document.createElement('img');
-        bishopW.classList.add('piece');
-        bishopW.src = './assets/bishop-w.svg';
-        bishopW.dataset['positionX'] = '2';
-        bishopW.dataset['positionY'] = '2';
-        bishopW.dataset['piece'] = 'bishop';
-        bishopW.dataset['color'] = 'white';
-        cell4.appendChild(bishopW);
-    }
-
-    const cell5 = document.getElementById('4-0');
-    
-    if (cell5) {
-        const queenW = document.createElement('img');
-        queenW.classList.add('piece');
-        queenW.src = './assets/queen-w.svg';
-        queenW.dataset['positionX'] = '4';
-        queenW.dataset['positionY'] = '0';
-        queenW.dataset['piece'] = 'queen';
-        queenW.dataset['color'] = 'white';
-        cell5.appendChild(queenW);
-    }
-
-    const cell6 = document.getElementById('1-2');
-    
-    if (cell6) {
-        const queenW = document.createElement('img');
-        queenW.classList.add('piece');
-        queenW.src = './assets/knight-w.svg';
-        queenW.dataset['positionX'] = '1';
-        queenW.dataset['positionY'] = '2';
-        queenW.dataset['piece'] = 'knight';
-        queenW.dataset['color'] = 'white';
-        cell6.appendChild(queenW);
-    }
-
-    const cell7 = document.getElementById('1-6');
-
-    if (cell7) {
-        const pawnW = document.createElement('img');
-        pawnW.classList.add('piece');
-        pawnW.src = './assets/pawn-w.svg';
-        pawnW.dataset['positionX'] = '1';
-        pawnW.dataset['positionY'] = '6';
-        pawnW.dataset['firstMove'] = '1';
-        pawnW.dataset['piece'] = 'pawn';
-        pawnW.dataset['color'] = 'black';
-        cell7.appendChild(pawnW);
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const pieceName = startBoard[`${col}-${row}`]
+            if (pieceName !== undefined) {
+                const cell = document.getElementById(`${col}-${row}`)
+                if (cell) {
+                    const color = row<5 ? 'black' : 'white';
+                    const piece = document.createElement('img');
+                    piece.classList.add('piece');
+                    piece.src = `./assets/${pieceName}-${color[0]}.svg`;
+                    piece.alt = `${color} ${pieceName}`;
+                    piece.dataset['positionX'] = `${col}`;
+                    piece.dataset['positionY'] = `${row}`;
+                    piece.dataset['piece'] = `${pieceName}`;
+                    piece.dataset['color'] = `${color}`;
+                    if (pieceName === 'pawn') {
+                        piece.dataset['firstMove'] = '1';
+                    }
+                    cell.appendChild(piece);
+                }
+            }
+        }
     }
 
     // Add Click event to all pieces on board
@@ -493,36 +458,43 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
                 cellLists.push([posX-2, posY-1]);
         }
     } else if (pieceType === 'pawn') {
-        let cell = document.getElementById(`${posX}-${posY-1}`);
+        const board = document.getElementById('chessboard');
+        if (!board) {
+            console.error(`couldn't get the board element`);
+            return [[]];
+        }
+        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
+        const colorDir = piece.dataset['color'] === 'white' ? 1 : -1
+        let cell = document.getElementById(`${posX}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             if (!cellOccupant) {
-                cellLists.push([posX, posY-1]);
+                cellLists.push([posX, posY-1*boardDir*colorDir]);
                 if (parseInt(piece.dataset['firstMove'] ?? "0", 10)) {
-                    cell = document.getElementById(`${posX}-${posY-2}`);
+                    cell = document.getElementById(`${posX}-${posY-2*boardDir*colorDir}`);
                     if (cell) {
                         const cellOccupant = cell.querySelector('.piece') as HTMLElement;
                         if (!cellOccupant) {
-                            cellLists.push([posX, posY-2]);
+                            cellLists.push([posX, posY-2*boardDir*colorDir]);
                         } 
                     }
                 }
             } 
         }
 
-        cell = document.getElementById(`${posX-1}-${posY-1}`);
+        cell = document.getElementById(`${posX-1}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([posX-1, posY-1]);
+                cellLists.push([posX-1, posY-1*boardDir*colorDir]);
             } 
         }
 
-        cell = document.getElementById(`${posX+1}-${posY-1}`);
+        cell = document.getElementById(`${posX+1}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                cellLists.push([posX+1, posY-1]);
+                cellLists.push([posX+1, posY-1*boardDir*colorDir]);
             } 
         }
 
@@ -640,10 +612,25 @@ function handleDotClick(event: Event) {
         return;
     }
 
+    // Promote pawn to queen
     if (clickedDot.dataset['fromPiece'] === 'pawn') {
         originPiece.dataset['firstMove'] = '0';
 
-        if (dotY === '0') {
+        const board = document.getElementById('chessboard');
+        if (!board) {
+            console.error(`couldn't get the board element`);
+            return;
+        }
+
+        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
+        const colorDir = originPiece.dataset['color'] === 'white' ? 1 : -1
+        const correctEnd = boardDir*colorDir
+        if (correctEnd === 0) {
+            console.error('Something went wrong when trying to retrieve the boardDir');
+            return;
+        }
+
+        if ((dotY === '0' && correctEnd === 1) || (dotY === '7' && correctEnd === -1)) {
             originPiece.dataset['firstMove'] = '';
             originPiece.dataset['piece'] = 'queen'
             originPiece.src = `./assets/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
