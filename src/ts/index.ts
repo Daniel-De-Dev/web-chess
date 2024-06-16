@@ -2,21 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    // Idea for pinning moves
-    // A piece needs to be checked for its moving will result in a check
-    // Board will know when a active check exists, it will only allow moves to avoid check or block check
-    // Need to handle edge case where piece could capture the checking piece
     //1. Add Checks
     //2. Add Add logic for forced check moves
     //3. Add Castling (also check logic)
     //4. Add Pawn Special Move (also check logic)
-    //5. Add Opposite pawn movement logic
     //6. Flip board function 
 
     if (board) {
 
         board.dataset['highlightedCell'] = '';
-        board.dataset['direction'] = '1'
+        board.dataset['check'] = '';
+        board.dataset['turn'] = 'white';
+        board.dataset['direction'] = '1'; // 1 or -1 where 1 is white bottom and -1 is black bottom
 
         // Generate each cell of the board
         for (let row = 0; row < 8; row++) {
@@ -506,6 +503,11 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
 function displayMoves(piece: HTMLElement) {
 
     let cellLists: Number[][] = [];
+    const board = document.getElementById('chessboard') as HTMLElement
+    if (!board) {
+        console.error('couldnt get the chessboard element');
+        return;
+    }
     
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
@@ -524,6 +526,47 @@ function displayMoves(piece: HTMLElement) {
             let value = s.split('-');
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
+    } else if (board.dataset['check'] !== '') {
+        // there is a check
+
+        const checkerPos = board.dataset['check']
+        if (!checkerPos) {return;}
+
+        const opponentChecker = document.querySelector(`[data-position-x="${checkerPos[0]}"][data-position-y="${checkerPos[2]}"]`) as HTMLElement;
+
+        const opponentCheckerMoves = getPossibleMoves(opponentChecker, false, null).map(coord => coord.join('-'));
+        let pieceMoves = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
+
+        const pieceColor = piece.dataset['color']
+        if (!pieceColor) {
+            console.error('couldst find pieces color', piece);
+            return;
+        }
+        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement
+
+        if (!pieceKing) {
+            console.error('couldst find pieces king', piece, pieceKing);
+            return;
+        }
+
+        const pieceKingX = parseInt(pieceKing.dataset['positionX'] ?? '-1', 10);
+        const pieceKingY = parseInt(pieceKing.dataset['positionY'] ?? '-1', 10);
+        
+        const opponentX = parseInt(opponentChecker.dataset['positionX'] ?? '-1', 10);
+        const opponentY = parseInt(opponentChecker.dataset['positionY'] ?? '-1', 10);
+        if (opponentX === -1 || opponentY === -1) {
+            console.error('Failed to retrieve the opponent potential threat pieces position', opponentChecker);
+            return;
+        }
+        
+        pieceMoves = pieceMoves.filter(value => (((opponentCheckerMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}`)))) || value === `${opponentX}-${opponentY}`));
+        
+        pieceMoves.forEach(s => {
+            let value = s.split('-');
+            cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
+        });
+
+
     } else {
         
         const allPieces = document.querySelectorAll('.piece');
@@ -730,6 +773,16 @@ function handleDotClick(event: Event) {
             return;
         }
 
+        const checkPos = board.dataset['check']
+
+        if (checkPos && checkPos !== '') {
+            board.dataset['check'] = '';
+            const checkedCell = document.querySelector(`.check`);
+            if (checkedCell) {
+                checkedCell.classList.remove('check');
+            }
+        }
+
         const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
         const colorDir = originPiece.dataset['color'] === 'white' ? 1 : -1
         const correctEnd = boardDir*colorDir
@@ -748,11 +801,33 @@ function handleDotClick(event: Event) {
     originPiece.classList.remove('selected');
     originPiece.dataset['positionX'] = dotX;
     originPiece.dataset['positionY'] = dotY;
+
+    const newLocationPossibleMoves = getPossibleMoves(originPiece, false, null).map(coord => coord.join('-'));
+    const opponentColor = originPiece.dataset['color'] === 'white' ? 'black' : 'white'
+
+    const opponentKing = document.querySelector(`[data-piece="king"][data-color="${opponentColor}"]`) as HTMLElement;    
     
+    const kingX = opponentKing.dataset['positionX'];
+    const kingY = opponentKing.dataset['positionY'];
+
+    if (kingX === undefined || kingY === undefined) {
+        console.error('failed to get opponents king location', opponentKing);
+        return;
+    }
 
     const board = document.getElementById(`chessboard`) as HTMLElement;
     if (board) {
         board.dataset['highlightedCell'] = '';
+        board.dataset['turn'] = board.dataset['turn'] === 'white' ? 'black' : 'white';
+    }
+    
+    if (newLocationPossibleMoves.includes(`${kingX}-${kingY}`)) {
+        // a check as occurred
+        board.dataset['check'] = `${dotX}-${dotY}`;
+        const checkedCell = document.getElementById(`${kingX}-${kingY}`);
+        checkedCell?.classList.add('check')
+
+        //! check for loss HERE
     }
     
     if (clickedDot.classList.contains('capture')) {

@@ -54,11 +54,15 @@ body {
 }
 
 .black {
-    background: brown;
+    background: green;
 }
 
 .white {
     background: blanchedalmond;
+}
+
+.check {
+    background: red;
 }
 
 .piece {
