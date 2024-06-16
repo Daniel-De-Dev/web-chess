@@ -144,7 +144,7 @@ function handlePieceClick(event: Event) {
     }
 }
 
-function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][] {
+function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: Number[] | null): Number[][] {
     let cellLists: Number[][] = [];
     
     const pieceType = piece.dataset['piece'];
@@ -160,7 +160,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
         return [];
     }
     
-    if (pieceType === 'king') { //! Add king blocked moves later
+    if (pieceType === 'king') {
         for (let y = 0; y < 3; y++) {
             for (let x = 0; x < 3; x++) {
                 const cell = document.getElementById(`${x+posX-1}-${y+posY-1}`);
@@ -180,7 +180,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -196,7 +196,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -211,7 +211,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -226,7 +226,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -242,7 +242,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -258,7 +258,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -274,7 +274,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -290,7 +290,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -305,7 +305,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -320,7 +320,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -335,7 +335,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -350,7 +350,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -365,7 +365,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -381,7 +381,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -397,7 +397,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -413,7 +413,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean): Number[][]
             }
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
-            if (overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) {
+            if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
             } else if (cellOccupant) {break};
         }
@@ -509,13 +509,13 @@ function displayMoves(piece: HTMLElement) {
     
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
-        let tempList = getPossibleMoves(piece, false).map(coord => coord.join('-'));
+        let tempList = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
         let allOpponentMoves: String[] = [];
         
         allPieces.forEach(p => {
             const htmlElement = p as HTMLElement;
             if (piece.dataset['color'] !== htmlElement.dataset['color']) {
-                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, true).map(coord => coord.join('-'))])];
+                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, true, null).map(coord => coord.join('-'))])];
             }
         });
         
@@ -525,7 +525,115 @@ function displayMoves(piece: HTMLElement) {
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
     } else {
-        cellLists = getPossibleMoves(piece, false);
+        
+        const allPieces = document.querySelectorAll('.piece');
+        let potentialThreats: Number[][] = [];
+        
+        allPieces.forEach(p => {
+            const htmlElement = p as HTMLElement;
+            // check each enemy pieces possible moves
+            if (piece.dataset['color'] !== htmlElement.dataset['color']) {
+                const opponentMoves = getPossibleMoves(htmlElement, false, null).map(coord => coord.join('-')); // Contains all opponent moves
+                const pieceX = parseInt(piece.dataset['positionX'] ?? '-1', 10);
+                const pieceY = parseInt(piece.dataset['positionY'] ?? '-1', 10);
+
+                if (pieceX === -1 || pieceY === -1) {
+                    console.error('Failed to retrieve the current selected pieces position', piece);
+                    return;
+                }
+                
+                if (opponentMoves.includes(`${pieceX}-${pieceY}`)) {
+                    const opponentX = parseInt(htmlElement.dataset['positionX'] ?? '-1', 10);
+                    const opponentY = parseInt(htmlElement.dataset['positionY'] ?? '-1', 10);
+                    if (opponentX === -1 || opponentY === -1) {
+                        console.error('Failed to retrieve the opponent potential threat pieces position', htmlElement);
+                        return;
+                    }
+                    potentialThreats.push([opponentX, opponentY])
+                }
+            }
+        });
+        
+        // Potential threats now should contain all pieces that threaten the piece it self
+        const pieceColor = piece.dataset['color']
+        if (!pieceColor) {
+            console.error('couldst find pieces color', piece);
+            return;
+        }
+        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement
+
+        if (!pieceKing) {
+            console.error('couldst find pieces king', piece, pieceKing);
+            return;
+        }
+
+        const pieceKingX = parseInt(pieceKing.dataset['positionX'] ?? '-1', 10);
+        const pieceKingY = parseInt(pieceKing.dataset['positionY'] ?? '-1', 10);
+
+        if (pieceKingX === -1 || pieceKingY === -1) {
+            console.error('failed to get the pieces king position', pieceKing);
+            return;
+        }
+
+        let pinningPiece: HTMLElement | null = null;
+
+        potentialThreats.forEach(threatPos => {
+            const threatPiece = document.querySelector(`[data-position-x="${threatPos[0]}"][data-position-y="${threatPos[1]}"]`) as HTMLElement;
+            if (!threatPiece) {
+                console.error('couldn\'t locate the threat piece', threatPos);
+                return;
+            }
+
+            const pieceX = parseInt(piece.dataset['positionX'] ?? '-1', 10);
+            const pieceY = parseInt(piece.dataset['positionY'] ?? '-1', 10);
+
+            if (pieceX === -1 || pieceY === -1) {
+                console.error('Failed to retrieve the current selected pieces position', piece);
+                return;
+            }
+            
+            // remember to check for where pinned piece can capture the threatening piece 
+            if (getPossibleMoves(threatPiece, false, [pieceX, pieceY]).map(coord => coord.join('-')).includes(`${pieceKingX}-${pieceKingY}`)) {
+                if (pinningPiece) {
+                    console.error('The piece pinning the selected pieces has been found twice, from my logic this should only happen once')
+                }
+                pinningPiece = threatPiece;
+            }
+        });
+
+        
+        if (pinningPiece) {
+
+            const pieceX = parseInt(piece.dataset['positionX'] ?? '-1', 10);
+            const pieceY = parseInt(piece.dataset['positionY'] ?? '-1', 10);
+
+            if (pieceX === -1 || pieceY === -1) {
+                console.error('Failed to retrieve the current selected pieces position', piece);
+                return;
+            }
+
+            let tempList = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
+            let opponentMoves: String[] = getPossibleMoves(pinningPiece, false, [pieceX, pieceY]).map(coord => coord.join('-'));
+
+            const opponentX = parseInt((pinningPiece as HTMLElement).dataset['positionX'] ?? '-1', 10);
+            const opponentY = parseInt((pinningPiece as HTMLElement).dataset['positionY'] ?? '-1', 10);
+
+            if (opponentX === -1 || opponentY === -1) {
+                console.error('Failed to retrieve the opponent potential threat pieces position', pinningPiece);
+                return;
+            }
+
+            tempList = tempList.filter(value => (((opponentMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}`)))) || value === `${opponentX}-${opponentY}`));
+
+            tempList.forEach(s => {
+            let value = s.split('-');
+            cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
+            });
+            
+        } else {
+            cellLists = getPossibleMoves(piece, false, null);
+        }
+        
     }
 
     cellLists.forEach(coordinate => {
