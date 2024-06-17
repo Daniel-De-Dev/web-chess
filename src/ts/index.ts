@@ -2,10 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    //1. Add Checks
-    //2. Add Add logic for forced check moves
+    //2. Add player turns 
     //3. Add Castling (also check logic)
-    //4. Add Pawn Special Move (also check logic)
+    //4. Add Pawn Special Move el peasant (also check logic)
     //6. Flip board function 
 
     if (board) {
