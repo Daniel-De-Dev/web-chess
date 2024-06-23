@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    //2. Add player turns 
     //3. Add Castling (also check logic)
     //4. Add Pawn Special Move el peasant (also check logic)
     //6. Flip board function 
@@ -82,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     piece.dataset['positionY'] = `${row}`;
                     piece.dataset['piece'] = `${pieceName}`;
                     piece.dataset['color'] = `${color}`;
-                    if (pieceName === 'pawn') {
+                    if (pieceName === 'pawn' || pieceName === 'rook' || pieceName === 'king') {
                         piece.dataset['firstMove'] = '1';
                     }
                     cell.appendChild(piece);
@@ -533,6 +532,68 @@ function displayMoves(piece: HTMLElement) {
             let value = s.split('-');
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
+
+        
+        if (piece.dataset['firstMove'] === '1') {
+            // castling rules
+            const pieceX = parseInt(piece.dataset['positionX'] ?? '-1', 10);
+            const pieceY = parseInt(piece.dataset['positionY'] ?? '-1', 10);
+
+            for (let i = pieceX; i >= 0; i--) {
+                if (allOpponentMoves.includes(`${i}-${pieceY}`)) {
+                    break;
+                }
+
+                const checkingCell = document.getElementById(`${i}-${pieceY}`)
+
+                if (checkingCell) {
+                    if (checkingCell.querySelector('.piece') && i !== 0 && i !== pieceX) {
+                        break;
+                    }
+                }
+                
+                if (i === 0) {
+                    const rookCell = document.getElementById(`${0}-${pieceY}`)
+                    if  (rookCell) {
+                        const rook = rookCell.querySelector('.piece') as HTMLElement
+                        if (rook) {
+                            if (rook.dataset['firstMove'] === '1' && rook.dataset['color'] === piece.dataset['color']) {
+                                cellLists.push([pieceX-2, pieceY]);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            for (let i = pieceX; i <= 7; i++) {
+                if (allOpponentMoves.includes(`${i}-${pieceY}`)) {
+                    break;
+                }
+
+                const checkingCell = document.getElementById(`${i}-${pieceY}`)
+
+                if (checkingCell) {
+                    if (checkingCell.querySelector('.piece') && i !== 7 && i !== pieceX) {
+                        break;
+                    }
+                }
+                
+                if (i === 7) {
+                    const rookCell = document.getElementById(`${7}-${pieceY}`)
+                    if  (rookCell) {
+                        const rook = rookCell.querySelector('.piece') as HTMLElement
+                        if (rook) {
+                            if (rook.dataset['firstMove'] === '1' && rook.dataset['color'] === piece.dataset['color']) {
+                                cellLists.push([pieceX+2, pieceY]);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
     } else if (board.dataset['check'] !== '') {
         // there is a check
 
@@ -799,6 +860,43 @@ function handleDotClick(event: Event) {
             originPiece.src = `./assets/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
         }
     }
+
+    if (clickedDot.dataset['fromPiece'] === 'king' || clickedDot.dataset['fromPiece'] === 'rook') {
+        originPiece.dataset['firstMove'] = '0';
+    }
+
+    if (clickedDot.dataset['fromPiece'] === 'king') {
+        if (clickedDot.dataset['positionX'] === '6') {
+
+            const rookCell = document.getElementById(`${7}-${dotY}`)
+            if (rookCell) {
+                const rook = rookCell.querySelector('.piece') as HTMLElement
+                if (rook) {
+                    rook.dataset['firstMove'] = '0';
+                    const newCell = document.getElementById(`${5}-${dotY}`);
+                    rook.dataset['positionX'] = '5';
+                    newCell?.appendChild(rook);
+                }
+            }
+
+        } else if (clickedDot.dataset['positionX'] === '2') {
+
+            const rookCell = document.getElementById(`${0}-${dotY}`)
+            if (rookCell) {
+                const rook = rookCell.querySelector('.piece') as HTMLElement
+                if (rook) {
+                    rook.dataset['firstMove'] = '0';
+                    const newCell = document.getElementById(`${3}-${dotY}`);
+                    rook.dataset['positionX'] = '3';
+                    newCell?.appendChild(rook);
+                }
+            }
+
+        }
+
+
+
+    } 
 
     originPiece.classList.remove('selected');
     originPiece.dataset['positionX'] = dotX;
