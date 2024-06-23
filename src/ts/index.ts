@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    //3. Add Castling (also check logic)
-    //4. Add Pawn Special Move el peasant (also check logic)
-    //6. Flip board function 
+    // Win/draw checks
+    // Flip board function
+
 
     if (board) {
 
@@ -84,6 +84,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (pieceName === 'pawn' || pieceName === 'rook' || pieceName === 'king') {
                         piece.dataset['firstMove'] = '1';
                     }
+
+                    if (pieceName === 'pawn') {
+                        piece.dataset['enPassant'] = '0';
+                    }
+
                     cell.appendChild(piece);
                 }
             }
@@ -497,6 +502,28 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             } 
         }
 
+        const enPassantPawn = document.querySelector('[data-en-passant="1"]') as HTMLElement;
+
+        if (enPassantPawn && enPassantPawn.dataset['color'] !== piece.dataset['color']) {
+            const pawnX = enPassantPawn.dataset['positionX'];
+            const pawnY = enPassantPawn.dataset['positionY'];
+            
+            if (pawnY === piece.dataset['positionY']) {
+                if (parseInt(pawnX ?? '-2') === parseInt(piece.dataset['positionX'] ?? '-1')-1 || parseInt(pawnX ?? '-2') === parseInt(piece.dataset['positionX'] ?? '-1')+1) {
+                    const passantCell = document.getElementById(`${pawnX}-${parseInt(pawnY ?? '-2')-1*boardDir*colorDir}`);
+                    if (passantCell) {
+                        if (!passantCell.querySelector('.piece')) {
+                            cellLists.push([parseInt(pawnX ?? '-1'), parseInt(pawnY ?? '-2')-1*boardDir*colorDir])
+                        }
+                    }
+                } 
+            }
+
+
+        }
+
+
+
 
     }
     return cellLists;
@@ -836,8 +863,26 @@ function handleDotClick(event: Event) {
         return;
     }
 
+    if ((parseInt(dotY) === parseFloat(originPiece.dataset['positionY'] ?? '-2') - 1 || (parseInt(dotY) === parseFloat(originPiece.dataset['positionY'] ?? '-2') + 1)) && (parseInt(dotX) === parseFloat(originPiece.dataset['positionX'] ?? '-2') - 1 || (parseInt(dotX) === parseFloat(originPiece.dataset['positionX'] ?? '-2') + 1))) {
+        const enPassantPawn = document.querySelector('[data-en-passant="1"]');
+        if (enPassantPawn) {
+            enPassantPawn.remove();
+        }
+    }
+
+    const enPassantPawn = document.querySelector('[data-en-passant="1"]') as HTMLElement;
+    if (enPassantPawn) {
+        enPassantPawn.dataset['enPassant'] = '0'
+    }
+
     // Promote pawn to queen
     if (clickedDot.dataset['fromPiece'] === 'pawn') {
+
+        if (parseInt(dotY, 10) - parseInt(originPiece.dataset['positionY'] ?? dotY, 10) === 2 || parseInt(dotY, 10) - parseInt(originPiece.dataset['positionY'] ?? dotY, 10) === -2) {
+            originPiece.dataset['enPassant'] = '1';
+        } 
+        
+
         originPiece.dataset['firstMove'] = '0';
 
         const board = document.getElementById('chessboard');
@@ -893,9 +938,6 @@ function handleDotClick(event: Event) {
             }
 
         }
-
-
-
     } 
 
     originPiece.classList.remove('selected');
