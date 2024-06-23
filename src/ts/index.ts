@@ -654,7 +654,7 @@ function displayMoves(piece: HTMLElement) {
             return;
         }
         
-        pieceMoves = pieceMoves.filter(value => (((opponentCheckerMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}`)))) || value === `${opponentX}-${opponentY}`));
+        pieceMoves = pieceMoves.filter(value => (((opponentCheckerMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}` && (((parseInt(value[0] ?? '-2') >= opponentX && parseInt(value[0] ?? '-2') < pieceKingX) || (parseInt(value[0] ?? '-2') <= opponentX && parseInt(value[0] ?? '-2') > pieceKingX)) && ((parseInt(value[2] ?? '-2') >= opponentY && parseInt(value[2] ?? '-2') < pieceKingY) || (parseInt(value[2] ?? '-2') <= opponentY && parseInt(value[2] ?? '-2') > pieceKingY))))))) || value === `${opponentX}-${opponentY}`));
         
         pieceMoves.forEach(s => {
             let value = s.split('-');
