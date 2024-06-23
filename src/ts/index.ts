@@ -144,7 +144,7 @@ function handlePieceClick(event: Event) {
     }
 }
 
-function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: Number[] | null): Number[][] {
+function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: Number[] | null, kingPOV: Boolean): Number[][] {
     let cellLists: Number[][] = [];
     
     const pieceType = piece.dataset['piece'];
@@ -468,7 +468,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
         let cell = document.getElementById(`${posX}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (!cellOccupant) {
+            if (!cellOccupant && !kingPOV) {
                 cellLists.push([posX, posY-1*boardDir*colorDir]);
                 if (parseInt(piece.dataset['firstMove'] ?? "0", 10)) {
                     cell = document.getElementById(`${posX}-${posY-2*boardDir*colorDir}`);
@@ -485,7 +485,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
         cell = document.getElementById(`${posX-1}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+            if ((cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) || kingPOV) {
                 cellLists.push([posX-1, posY-1*boardDir*colorDir]);
             } 
         }
@@ -493,7 +493,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
         cell = document.getElementById(`${posX+1}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-            if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+            if ((cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) || kingPOV) {
                 cellLists.push([posX+1, posY-1*boardDir*colorDir]);
             } 
         }
@@ -508,7 +508,7 @@ function displayMoves(piece: HTMLElement) {
     let cellLists: Number[][] = [];
     const board = document.getElementById('chessboard') as HTMLElement
     if (!board) {
-        console.error('couldnt get the chessboard element');
+        console.error('couldn\'t get the chessboard element');
         return;
     }
 
@@ -518,13 +518,13 @@ function displayMoves(piece: HTMLElement) {
     
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
-        let tempList = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
+        let tempList = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
         let allOpponentMoves: String[] = [];
         
         allPieces.forEach(p => {
             const htmlElement = p as HTMLElement;
             if (piece.dataset['color'] !== htmlElement.dataset['color']) {
-                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, true, null).map(coord => coord.join('-'))])];
+                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, true, null, true).map(coord => coord.join('-'))])];
             }
         });
         
@@ -541,8 +541,8 @@ function displayMoves(piece: HTMLElement) {
 
         const opponentChecker = document.querySelector(`[data-position-x="${checkerPos[0]}"][data-position-y="${checkerPos[2]}"]`) as HTMLElement;
 
-        const opponentCheckerMoves = getPossibleMoves(opponentChecker, false, null).map(coord => coord.join('-'));
-        let pieceMoves = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
+        const opponentCheckerMoves = getPossibleMoves(opponentChecker, false, null, false).map(coord => coord.join('-'));
+        let pieceMoves = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
 
         const pieceColor = piece.dataset['color']
         if (!pieceColor) {
@@ -583,7 +583,7 @@ function displayMoves(piece: HTMLElement) {
             const htmlElement = p as HTMLElement;
             // check each enemy pieces possible moves
             if (piece.dataset['color'] !== htmlElement.dataset['color']) {
-                const opponentMoves = getPossibleMoves(htmlElement, false, null).map(coord => coord.join('-')); // Contains all opponent moves
+                const opponentMoves = getPossibleMoves(htmlElement, false, null, false).map(coord => coord.join('-')); // Contains all opponent moves
                 const pieceX = parseInt(piece.dataset['positionX'] ?? '-1', 10);
                 const pieceY = parseInt(piece.dataset['positionY'] ?? '-1', 10);
 
@@ -643,7 +643,7 @@ function displayMoves(piece: HTMLElement) {
             }
             
             // remember to check for where pinned piece can capture the threatening piece 
-            if (getPossibleMoves(threatPiece, false, [pieceX, pieceY]).map(coord => coord.join('-')).includes(`${pieceKingX}-${pieceKingY}`)) {
+            if (getPossibleMoves(threatPiece, false, [pieceX, pieceY], false).map(coord => coord.join('-')).includes(`${pieceKingX}-${pieceKingY}`)) {
                 if (pinningPiece) {
                     console.error('The piece pinning the selected pieces has been found twice, from my logic this should only happen once')
                 }
@@ -662,8 +662,8 @@ function displayMoves(piece: HTMLElement) {
                 return;
             }
 
-            let tempList = getPossibleMoves(piece, false, null).map(coord => coord.join('-'));
-            let opponentMoves: String[] = getPossibleMoves(pinningPiece, false, [pieceX, pieceY]).map(coord => coord.join('-'));
+            let tempList = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
+            let opponentMoves: String[] = getPossibleMoves(pinningPiece, false, [pieceX, pieceY], false).map(coord => coord.join('-'));
 
             const opponentX = parseInt((pinningPiece as HTMLElement).dataset['positionX'] ?? '-1', 10);
             const opponentY = parseInt((pinningPiece as HTMLElement).dataset['positionY'] ?? '-1', 10);
@@ -681,7 +681,7 @@ function displayMoves(piece: HTMLElement) {
             });
             
         } else {
-            cellLists = getPossibleMoves(piece, false, null);
+            cellLists = getPossibleMoves(piece, false, null, false);
         }
         
     }
@@ -785,16 +785,6 @@ function handleDotClick(event: Event) {
             return;
         }
 
-        const checkPos = board.dataset['check']
-
-        if (checkPos && checkPos !== '') {
-            board.dataset['check'] = '';
-            const checkedCell = document.querySelector(`.check`);
-            if (checkedCell) {
-                checkedCell.classList.remove('check');
-            }
-        }
-
         const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
         const colorDir = originPiece.dataset['color'] === 'white' ? 1 : -1
         const correctEnd = boardDir*colorDir
@@ -814,7 +804,7 @@ function handleDotClick(event: Event) {
     originPiece.dataset['positionX'] = dotX;
     originPiece.dataset['positionY'] = dotY;
 
-    const newLocationPossibleMoves = getPossibleMoves(originPiece, false, null).map(coord => coord.join('-'));
+    const newLocationPossibleMoves = getPossibleMoves(originPiece, false, null, false).map(coord => coord.join('-'));
     const opponentColor = originPiece.dataset['color'] === 'white' ? 'black' : 'white'
 
     const opponentKing = document.querySelector(`[data-piece="king"][data-color="${opponentColor}"]`) as HTMLElement;    
@@ -833,6 +823,16 @@ function handleDotClick(event: Event) {
         board.dataset['turn'] = board.dataset['turn'] === 'white' ? 'black' : 'white';
     }
     
+    const checkPos = board.dataset['check']
+
+    if (checkPos && checkPos !== '') {
+        board.dataset['check'] = '';
+        const checkedCell = document.querySelector(`.check`);
+        if (checkedCell) {
+            checkedCell.classList.remove('check');
+        }
+    }
+
     if (newLocationPossibleMoves.includes(`${kingX}-${kingY}`)) {
         // a check as occurred
         board.dataset['check'] = `${dotX}-${dotY}`;
