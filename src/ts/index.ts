@@ -112,6 +112,10 @@ function handlePieceClick(event: Event) {
         console.error('couldn\'t get the Chessboard Element');
         return;
     }
+
+    if (board.dataset["turn"] !== clickedPiece.dataset["color"]) {
+        return;
+    }
     
     // Get the what the current highlighted cell on the board is
     const highlighted_cell = board.dataset['highlightedCell'];
@@ -507,6 +511,10 @@ function displayMoves(piece: HTMLElement) {
         console.error('couldnt get the chessboard element');
         return;
     }
+
+    if (board.dataset["turn"] !== piece.dataset["color"]) {
+        return;
+    }
     
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
@@ -710,6 +718,8 @@ function handleCellClick() {
         return;
     }
 
+
+
     const highlighted_cell = board.dataset['highlightedCell'];
     if (highlighted_cell === undefined) {
         console.error('Failed to retrieve data of highlighted cell from chessboard', board);
@@ -718,8 +728,11 @@ function handleCellClick() {
 
     const cell = document.getElementById(highlighted_cell);
     if (cell) {
-        const cellPiece = cell.querySelector('.piece');
+        const cellPiece = cell.querySelector('.piece') as HTMLElement;
         if (cellPiece) {
+            if (board.dataset["turn"] !== cellPiece.dataset["color"]) {
+                return;
+            }
             cellPiece.classList.remove('selected');        
             board.dataset['highlightedCell'] = '';
             
