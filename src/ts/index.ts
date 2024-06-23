@@ -978,8 +978,6 @@ function handleDotClick(event: Event) {
         board.dataset['check'] = `${dotX}-${dotY}`;
         const checkedCell = document.getElementById(`${kingX}-${kingY}`);
         checkedCell?.classList.add('check')
-
-        //! check for loss HERE
     }
     
     if (clickedDot.classList.contains('capture')) {
@@ -996,4 +994,23 @@ function handleDotClick(event: Event) {
     dots.forEach(dot => {
         dot.remove();    
     });
+
+    const allPieces = document.querySelectorAll('.piece');
+        let allOpponentMoves: String[] = [];
+        
+        allPieces.forEach(p => {
+            const htmlElement = p as HTMLElement;
+            if (originPiece.dataset['color'] !== htmlElement.dataset['color']) {
+                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, false, null, false).map(coord => coord.join('-'))])];
+            }
+        });
+
+    if (allOpponentMoves.length === 0) {
+        if (board.dataset['check'] !== '') {
+            console.log(`${originPiece.dataset['color']} Wins!`)
+        } else {
+            console.log('It\'s a draw!');
+        }
+    }
+    
 } 
