@@ -144,7 +144,9 @@ function handlePieceClick(event: Event) {
         board.dataset['highlightedCell'] = `${posX}-${posY}`;
 
         // Display the pieces legal moves
-        displayMoves(clickedPiece);
+        displayMoves(clickedPiece, false);
+
+        console.log(displayMoves(clickedPiece, true));
     }
 }
 
@@ -529,7 +531,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
     return cellLists;
 }
 
-function displayMoves(piece: HTMLElement) {
+function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
 
     let cellLists: Number[][] = [];
     const board = document.getElementById('chessboard') as HTMLElement
@@ -774,29 +776,55 @@ function displayMoves(piece: HTMLElement) {
         
     }
 
-    cellLists.forEach(coordinate => {
-        const dot = document.createElement('div');
-        if (dot) {
-            dot.classList.add('dot');
-            dot.addEventListener('click', handleDotClick);
-            dot.dataset['positionX'] = `${coordinate[0]}`;
-            dot.dataset['positionY'] = `${coordinate[1]}`;
-            dot.dataset['fromPiece'] = `${piece.dataset['piece']}`;
-            const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
-            if (cell) {
+    if (!onlyForCheck) {
+        cellLists.forEach(coordinate => {
+            const dot = document.createElement('div');
+            if (dot) {
+                dot.classList.add('dot');
+                dot.addEventListener('click', handleDotClick);
+                dot.dataset['positionX'] = `${coordinate[0]}`;
+                dot.dataset['positionY'] = `${coordinate[1]}`;
+                dot.dataset['fromPiece'] = `${piece.dataset['piece']}`;
+                const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
+                if (cell) {
 
-                const cellOccupant = cell.querySelector('.piece') as HTMLElement;
-                if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
-                    // an enemy is located on this cell
-                    dot.classList.add('capture');
-                    cell.appendChild(dot);
-                } else if (!cellOccupant) {
-                    // empty cell
-                    cell.appendChild(dot);
+                    const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+                    if (cellOccupant && cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                        // an enemy is located on this cell
+                        dot.classList.add('capture');
+                        cell.appendChild(dot);
+                    } else if (!cellOccupant) {
+                        // empty cell
+                        cell.appendChild(dot);
+                    }
                 }
             }
-        }
+        });
+    }
+
+    if (cellLists.length === 0) {
+        return 0;
+    }
+
+    let hadValidMove = false;
+
+    cellLists.forEach(coordinate => { 
+        const cell = document.getElementById(`${coordinate[0]}-${coordinate[1]}`);
+            if (cell) {
+                const cellOccupant = cell.querySelector('.piece') as HTMLElement;
+                if (!cellOccupant) {
+                    hadValidMove = true;
+                } else if (cellOccupant.dataset['color'] !== piece.dataset['color']) {
+                    hadValidMove = true;
+                }
+            }
     });
+
+    if (hadValidMove) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 function handleCellClick() {
@@ -996,16 +1024,15 @@ function handleDotClick(event: Event) {
     });
 
     const allPieces = document.querySelectorAll('.piece');
-        let allOpponentMoves: String[] = [];
-        
-        allPieces.forEach(p => {
-            const htmlElement = p as HTMLElement;
-            if (originPiece.dataset['color'] !== htmlElement.dataset['color']) {
-                allOpponentMoves = [...new Set([...allOpponentMoves, ...getPossibleMoves(htmlElement, false, null, false).map(coord => coord.join('-'))])];
-            }
-        });
+    let hadAnyMoves = false;
 
-    if (allOpponentMoves.length === 0) {
+    allPieces.forEach(p => {
+        if (originPiece.dataset['color'] !== (p as HTMLElement).dataset['color'] && displayMoves(p as HTMLElement, true) === 1) {
+            hadAnyMoves = true;
+        }
+    });
+
+    if (!hadAnyMoves) {
         if (board.dataset['check'] !== '') {
             console.log(`${originPiece.dataset['color']} Wins!`)
         } else {
