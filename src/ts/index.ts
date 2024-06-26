@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const board = document.getElementById('chessboard');
 
     //! TODO:
-    // Win/draw checks
     // Flip board function
 
 
@@ -145,8 +144,6 @@ function handlePieceClick(event: Event) {
 
         // Display the pieces legal moves
         displayMoves(clickedPiece, false);
-
-        console.log(displayMoves(clickedPiece, true));
     }
 }
 
