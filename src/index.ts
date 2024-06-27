@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const color = row<5 ? 'black' : 'white';
                     const piece = document.createElement('img');
                     piece.classList.add('piece');
-                    piece.src = `./assets/${pieceName}-${color[0]}.svg`;
+                    piece.src = `./assets/images/${pieceName}-${color[0]}.svg`;
                     piece.alt = `${color} ${pieceName}`;
                     piece.dataset['positionX'] = `${col}`;
                     piece.dataset['positionY'] = `${row}`;
@@ -927,7 +927,7 @@ function handleDotClick(event: Event) {
         if ((dotY === '0' && correctEnd === 1) || (dotY === '7' && correctEnd === -1)) {
             originPiece.dataset['firstMove'] = '';
             originPiece.dataset['piece'] = 'queen'
-            originPiece.src = `./assets/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
+            originPiece.src = `./assets/images/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
         }
     }
 
