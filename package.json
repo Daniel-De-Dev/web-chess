@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "echo 'Starting build...' && tsc && postcss src/css/* --dir dist/css/ && npm run copy-html && npm run copy-assets && echo 'Build complete.'",
+    "build": "echo 'Starting build...' && tsc && postcss src/styles/* --dir dist/styles/ && npm run copy-html && npm run copy-assets && echo 'Build complete.'",
     "watch": "tsc --watch",
     "copy-html": "copyfiles -u 1 src/**/*.html dist",
     "copy-assets": "copyfiles -u 1 src/assets/** dist"
