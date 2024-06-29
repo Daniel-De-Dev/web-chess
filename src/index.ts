@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-            const pieceName = startBoard[`${col}-${row}`]
+            const pieceName = startBoard[`${col}-${row}`];
             if (pieceName !== undefined) {
-                const cell = document.getElementById(`${col}-${row}`)
+                const cell = document.getElementById(`${col}-${row}`);
                 if (cell) {
                     const color = row<5 ? 'black' : 'white';
                     const piece = document.createElement('img');
@@ -147,8 +147,8 @@ function handlePieceClick(event: Event) {
     }
 }
 
-function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: Number[] | null, kingPOV: Boolean): Number[][] {
-    let cellLists: Number[][] = [];
+function getPossibleMoves(piece: HTMLElement, overLookKing: boolean, ignorePos: number[] | null, kingPOV: boolean): number[][] {
+    const cellLists: number[][] = [];
     
     const pieceType = piece.dataset['piece'];
     if (!pieceType) {
@@ -185,7 +185,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -201,7 +201,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -216,7 +216,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -231,7 +231,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
     } else if (pieceType === 'bishop') {
 
@@ -247,13 +247,13 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
 
         while (true) {
-            lastPos[1]++
+            lastPos[1]++;
             lastPos[0]++;
             const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
             if (!cell) {
@@ -263,7 +263,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -279,7 +279,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -295,7 +295,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
     } else if (pieceType === 'queen') {
@@ -310,7 +310,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -325,7 +325,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -340,7 +340,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -355,7 +355,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -370,13 +370,13 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
 
         while (true) {
-            lastPos[1]++
+            lastPos[1]++;
             lastPos[0]++;
             const cell = document.getElementById(`${lastPos[0]}-${lastPos[1]}`);
             if (!cell) {
@@ -386,7 +386,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -402,7 +402,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
 
         lastPos = [posX, posY];
@@ -418,7 +418,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             cellLists.push([Number(lastPos[0]), Number(lastPos[1])]);
             if ((overLookKing && cellOccupant && cellOccupant.dataset['piece'] === 'king' && piece.dataset['color'] !== cellOccupant.dataset['color']) || (ignorePos !== null && lastPos[0] === ignorePos[0] && lastPos[1] === ignorePos[1])) {
                 continue;
-            } else if (cellOccupant) {break};
+            } else if (cellOccupant) {break;}
         }
     } else if (pieceType === 'knight') {
         let cell = document.getElementById(`${posX-1}-${posY-2}`);
@@ -466,8 +466,8 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
             console.error(`couldn't get the board element`);
             return [[]];
         }
-        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
-        const colorDir = piece.dataset['color'] === 'white' ? 1 : -1
+        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10);
+        const colorDir = piece.dataset['color'] === 'white' ? 1 : -1;
         let cell = document.getElementById(`${posX}-${posY-1*boardDir*colorDir}`);
         if (cell) {
             const cellOccupant = cell.querySelector('.piece') as HTMLElement;
@@ -512,7 +512,7 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
                     const passantCell = document.getElementById(`${pawnX}-${parseInt(pawnY ?? '-2')-1*boardDir*colorDir}`);
                     if (passantCell) {
                         if (!passantCell.querySelector('.piece')) {
-                            cellLists.push([parseInt(pawnX ?? '-1'), parseInt(pawnY ?? '-2')-1*boardDir*colorDir])
+                            cellLists.push([parseInt(pawnX ?? '-1'), parseInt(pawnY ?? '-2')-1*boardDir*colorDir]);
                         }
                     }
                 } 
@@ -530,8 +530,8 @@ function getPossibleMoves(piece: HTMLElement, overLookKing: Boolean, ignorePos: 
 
 function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
 
-    let cellLists: Number[][] = [];
-    const board = document.getElementById('chessboard') as HTMLElement
+    let cellLists: number[][] = [];
+    const board = document.getElementById('chessboard') as HTMLElement;
     if (!board) {
         console.error('couldn\'t get the chessboard element');
         return;
@@ -544,7 +544,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
     if (piece.dataset['piece'] === 'king') {
         const allPieces = document.querySelectorAll('.piece');
         let tempList = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
-        let allOpponentMoves: String[] = [];
+        let allOpponentMoves: string[] = [];
         
         allPieces.forEach(p => {
             const htmlElement = p as HTMLElement;
@@ -555,7 +555,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
         
         tempList = tempList.filter(value => !allOpponentMoves.includes(value));
         tempList.forEach(s => {
-            let value = s.split('-');
+            const value = s.split('-');
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
 
@@ -570,7 +570,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
                     break;
                 }
 
-                const checkingCell = document.getElementById(`${i}-${pieceY}`)
+                const checkingCell = document.getElementById(`${i}-${pieceY}`);
 
                 if (checkingCell) {
                     if (checkingCell.querySelector('.piece') && i !== 0 && i !== pieceX) {
@@ -579,9 +579,9 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
                 }
                 
                 if (i === 0) {
-                    const rookCell = document.getElementById(`${0}-${pieceY}`)
+                    const rookCell = document.getElementById(`${0}-${pieceY}`);
                     if  (rookCell) {
-                        const rook = rookCell.querySelector('.piece') as HTMLElement
+                        const rook = rookCell.querySelector('.piece') as HTMLElement;
                         if (rook) {
                             if (rook.dataset['firstMove'] === '1' && rook.dataset['color'] === piece.dataset['color']) {
                                 cellLists.push([pieceX-2, pieceY]);
@@ -597,7 +597,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
                     break;
                 }
 
-                const checkingCell = document.getElementById(`${i}-${pieceY}`)
+                const checkingCell = document.getElementById(`${i}-${pieceY}`);
 
                 if (checkingCell) {
                     if (checkingCell.querySelector('.piece') && i !== 7 && i !== pieceX) {
@@ -606,9 +606,9 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
                 }
                 
                 if (i === 7) {
-                    const rookCell = document.getElementById(`${7}-${pieceY}`)
+                    const rookCell = document.getElementById(`${7}-${pieceY}`);
                     if  (rookCell) {
-                        const rook = rookCell.querySelector('.piece') as HTMLElement
+                        const rook = rookCell.querySelector('.piece') as HTMLElement;
                         if (rook) {
                             if (rook.dataset['firstMove'] === '1' && rook.dataset['color'] === piece.dataset['color']) {
                                 cellLists.push([pieceX+2, pieceY]);
@@ -623,7 +623,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
     } else if (board.dataset['check'] !== '') {
         // there is a check
 
-        const checkerPos = board.dataset['check']
+        const checkerPos = board.dataset['check'];
         if (!checkerPos) {return;}
 
         const opponentChecker = document.querySelector(`[data-position-x="${checkerPos[0]}"][data-position-y="${checkerPos[2]}"]`) as HTMLElement;
@@ -631,12 +631,12 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
         const opponentCheckerMoves = getPossibleMoves(opponentChecker, false, null, false).map(coord => coord.join('-'));
         let pieceMoves = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
 
-        const pieceColor = piece.dataset['color']
+        const pieceColor = piece.dataset['color'];
         if (!pieceColor) {
             console.error('couldst find pieces color', piece);
             return;
         }
-        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement
+        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement;
 
         if (!pieceKing) {
             console.error('couldst find pieces king', piece, pieceKing);
@@ -656,7 +656,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
         pieceMoves = pieceMoves.filter(value => (((opponentCheckerMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}` && (((parseInt(value[0] ?? '-2') >= opponentX && parseInt(value[0] ?? '-2') < pieceKingX) || (parseInt(value[0] ?? '-2') <= opponentX && parseInt(value[0] ?? '-2') > pieceKingX)) && ((parseInt(value[2] ?? '-2') >= opponentY && parseInt(value[2] ?? '-2') < pieceKingY) || (parseInt(value[2] ?? '-2') <= opponentY && parseInt(value[2] ?? '-2') > pieceKingY))))))) || value === `${opponentX}-${opponentY}`));
         
         pieceMoves.forEach(s => {
-            let value = s.split('-');
+            const value = s.split('-');
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
         });
 
@@ -664,7 +664,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
     } else {
         
         const allPieces = document.querySelectorAll('.piece');
-        let potentialThreats: Number[][] = [];
+        const potentialThreats: number[][] = [];
         
         allPieces.forEach(p => {
             const htmlElement = p as HTMLElement;
@@ -686,18 +686,18 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
                         console.error('Failed to retrieve the opponent potential threat pieces position', htmlElement);
                         return;
                     }
-                    potentialThreats.push([opponentX, opponentY])
+                    potentialThreats.push([opponentX, opponentY]);
                 }
             }
         });
         
         // Potential threats now should contain all pieces that threaten the piece it self
-        const pieceColor = piece.dataset['color']
+        const pieceColor = piece.dataset['color'];
         if (!pieceColor) {
             console.error('couldst find pieces color', piece);
             return;
         }
-        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement
+        const pieceKing = document.querySelector(`[data-piece="king"][data-color="${pieceColor}"]`) as HTMLElement;
 
         if (!pieceKing) {
             console.error('couldst find pieces king', piece, pieceKing);
@@ -732,7 +732,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
             // remember to check for where pinned piece can capture the threatening piece 
             if (getPossibleMoves(threatPiece, false, [pieceX, pieceY], false).map(coord => coord.join('-')).includes(`${pieceKingX}-${pieceKingY}`)) {
                 if (pinningPiece) {
-                    console.error('The piece pinning the selected pieces has been found twice, from my logic this should only happen once')
+                    console.error('The piece pinning the selected pieces has been found twice, from my logic this should only happen once');
                 }
                 pinningPiece = threatPiece;
             }
@@ -750,7 +750,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
             }
 
             let tempList = getPossibleMoves(piece, false, null, false).map(coord => coord.join('-'));
-            let opponentMoves: String[] = getPossibleMoves(pinningPiece, false, [pieceX, pieceY], false).map(coord => coord.join('-'));
+            const opponentMoves: string[] = getPossibleMoves(pinningPiece, false, [pieceX, pieceY], false).map(coord => coord.join('-'));
 
             const opponentX = parseInt((pinningPiece as HTMLElement).dataset['positionX'] ?? '-1', 10);
             const opponentY = parseInt((pinningPiece as HTMLElement).dataset['positionY'] ?? '-1', 10);
@@ -763,7 +763,7 @@ function displayMoves(piece: HTMLElement, onlyForCheck: boolean) {
             tempList = tempList.filter(value => (((opponentMoves.includes(value) && ((pieceKingX === opponentX && value[0] === `${pieceKingX}`) || (pieceKingY === opponentY && value[2] === `${pieceKingY}`) || (pieceKingX !== opponentX && pieceKingY !== opponentY && value[0] !== `${opponentX}` && value[2] !== `${opponentY}`)))) || value === `${opponentX}-${opponentY}`));
 
             tempList.forEach(s => {
-            let value = s.split('-');
+            const value = s.split('-');
             cellLists.push([parseInt(value[0] ?? '-1', 10), parseInt(value[1] ?? '-1', 10)]);
             });
             
@@ -897,7 +897,7 @@ function handleDotClick(event: Event) {
 
     const enPassantPawn = document.querySelector('[data-en-passant="1"]') as HTMLElement;
     if (enPassantPawn) {
-        enPassantPawn.dataset['enPassant'] = '0'
+        enPassantPawn.dataset['enPassant'] = '0';
     }
 
     // Promote pawn to queen
@@ -916,9 +916,9 @@ function handleDotClick(event: Event) {
             return;
         }
 
-        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10)
-        const colorDir = originPiece.dataset['color'] === 'white' ? 1 : -1
-        const correctEnd = boardDir*colorDir
+        const boardDir = parseInt(board.dataset['direction'] ?? "0", 10);
+        const colorDir = originPiece.dataset['color'] === 'white' ? 1 : -1;
+        const correctEnd = boardDir*colorDir;
         if (correctEnd === 0) {
             console.error('Something went wrong when trying to retrieve the boardDir');
             return;
@@ -926,7 +926,7 @@ function handleDotClick(event: Event) {
 
         if ((dotY === '0' && correctEnd === 1) || (dotY === '7' && correctEnd === -1)) {
             originPiece.dataset['firstMove'] = '';
-            originPiece.dataset['piece'] = 'queen'
+            originPiece.dataset['piece'] = 'queen';
             originPiece.src = `./assets/images/queen-${(originPiece.dataset['color'] ?? 'w')[0]}.svg`;
         }
     }
@@ -938,9 +938,9 @@ function handleDotClick(event: Event) {
     if (clickedDot.dataset['fromPiece'] === 'king') {
         if (clickedDot.dataset['positionX'] === '6') {
 
-            const rookCell = document.getElementById(`${7}-${dotY}`)
+            const rookCell = document.getElementById(`${7}-${dotY}`);
             if (rookCell) {
-                const rook = rookCell.querySelector('.piece') as HTMLElement
+                const rook = rookCell.querySelector('.piece') as HTMLElement;
                 if (rook) {
                     rook.dataset['firstMove'] = '0';
                     const newCell = document.getElementById(`${5}-${dotY}`);
@@ -951,9 +951,9 @@ function handleDotClick(event: Event) {
 
         } else if (clickedDot.dataset['positionX'] === '2') {
 
-            const rookCell = document.getElementById(`${0}-${dotY}`)
+            const rookCell = document.getElementById(`${0}-${dotY}`);
             if (rookCell) {
-                const rook = rookCell.querySelector('.piece') as HTMLElement
+                const rook = rookCell.querySelector('.piece') as HTMLElement;
                 if (rook) {
                     rook.dataset['firstMove'] = '0';
                     const newCell = document.getElementById(`${3}-${dotY}`);
@@ -970,7 +970,7 @@ function handleDotClick(event: Event) {
     originPiece.dataset['positionY'] = dotY;
 
     const newLocationPossibleMoves = getPossibleMoves(originPiece, false, null, false).map(coord => coord.join('-'));
-    const opponentColor = originPiece.dataset['color'] === 'white' ? 'black' : 'white'
+    const opponentColor = originPiece.dataset['color'] === 'white' ? 'black' : 'white';
 
     const opponentKing = document.querySelector(`[data-piece="king"][data-color="${opponentColor}"]`) as HTMLElement;    
     
@@ -988,7 +988,7 @@ function handleDotClick(event: Event) {
         board.dataset['turn'] = board.dataset['turn'] === 'white' ? 'black' : 'white';
     }
     
-    const checkPos = board.dataset['check']
+    const checkPos = board.dataset['check'];
 
     if (checkPos && checkPos !== '') {
         board.dataset['check'] = '';
@@ -1002,7 +1002,7 @@ function handleDotClick(event: Event) {
         // a check as occurred
         board.dataset['check'] = `${dotX}-${dotY}`;
         const checkedCell = document.getElementById(`${kingX}-${kingY}`);
-        checkedCell?.classList.add('check')
+        checkedCell?.classList.add('check');
     }
     
     if (clickedDot.classList.contains('capture')) {
@@ -1031,7 +1031,7 @@ function handleDotClick(event: Event) {
 
     if (!hadAnyMoves) {
         if (board.dataset['check'] !== '') {
-            console.log(`${originPiece.dataset['color']} Wins!`)
+            console.log(`${originPiece.dataset['color']} Wins!`);
         } else {
             console.log('It\'s a draw!');
         }

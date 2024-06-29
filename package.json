@@ -13,9 +13,12 @@
   "author": "Daniel-De-Dev",
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
     "autoprefixer": "^10.4.19",
     "copyfiles": "^2.4.1",
     "cssnano": "^7.0.1",
+    "eslint": "^8.57.0",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0"
   }
