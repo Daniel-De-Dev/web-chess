@@ -107,6 +107,10 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "src/ts/*"
-, "src/index.ts"  ]
+    "src/*",
+    "src/models/*" 
+  ],
+  "exclude": [
+    "src/old_index.ts"
+  ]
 }
