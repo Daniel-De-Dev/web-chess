@@ -49,6 +49,16 @@
             },
             "url": "file://${workspaceFolder}/dist/index.html",
             "preLaunchTask": "npm: build"
+        },
+        {
+            "type": "pwa-msedge",
+            "name": "Launch MS Edge for five server",
+            "request": "launch",
+            "runtimeArgs": [
+                "--remote-debugging-port=9222"
+            ],
+            "url": "http://localhost:5500/dist/index.html",
+            "preLaunchTask": "npm: build"
         }
     ],
     "compounds": [
