@@ -1,0 +1,6 @@
+{
+  "port": 5500,
+  "root": "dist",
+  "open": null,
+  "navigate": false
+}
