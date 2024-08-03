@@ -1,6 +1,6 @@
 import { Game } from "../controllers/Game.js";
 import { draw_board } from "../views/BoardView.js";
-import { get_valid_moves } from "./ValidationService.js";
+import { get_valid_moves } from "./Validation.js";
 
 export function handle_square_click(event: Event, game: Game) {
     const CLICKED_TARGET = event.target as HTMLElement;
@@ -43,5 +43,5 @@ function piece_click(piece_element: HTMLElement, cell_element: HTMLElement, game
     const x = parseInt(parts[0] ?? '-1', 10);
     const y = parseInt(parts[1] ?? '-1', 10);
     
-    get_valid_moves([x,y], game);
+    get_valid_moves({row: y, column: x}, game);
 }

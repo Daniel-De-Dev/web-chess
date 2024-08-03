@@ -30,4 +30,4 @@ export type Row = [Square, Square, Square, Square, Square, Square, Square, Squar
  */
 export type ChessBoard = [Row, Row, Row, Row, Row, Row, Row, Row];
 
-export type Coordinate = [number, number];
+export type Coordinate = {row: number, column: number};

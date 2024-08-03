@@ -1,7 +1,7 @@
 import { Game } from "../controllers/Game.js";
 import { BOARD_SIZE } from "../models/Board.js";
 import { ChessPiece } from "../models/Piece.js";
-import { handle_square_click } from "../services/GameService.js";
+import { handle_square_click } from "../services/Game.js";
 
 /**
  * Draws the chess board on the specified element.
@@ -13,9 +13,9 @@ import { handle_square_click } from "../services/GameService.js";
 export function draw_board(board_element: HTMLElement, game: Game) {
     clear_board(board_element);
 
-    let y = BOARD_SIZE - 1;
+    let y = game.board_direction === 1 ? 0 : BOARD_SIZE - 1;
     game.board.forEach(row => {
-        let x = 0;
+        let x = game.board_direction === 1 ? BOARD_SIZE - 1 : 0;
         row.forEach(square => {
             const cell = document.createElement('div');
             cell.classList.add('cell');
@@ -41,9 +41,9 @@ export function draw_board(board_element: HTMLElement, game: Game) {
                 piece.alt = `${square.type}-${piece_color}`;
                 cell.appendChild(piece);
             }
-            x++;
+            game.board_direction === 1 ? x-- : x++;
         });
-        y--;
+        game.board_direction === 1 ? y++ : y--;
     });
 }
 

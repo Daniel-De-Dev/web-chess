@@ -18,23 +18,23 @@ export const BOARD_SIZE = 8;
  */
 export const START_BOARD: ChessBoard = [
     [
-        new Rook(1), new Knight(1), new Bishop(1), new Queen(1), 
-        new King(1), new Bishop(1), new Knight(1), new Rook(1)
+        new Rook(1, false), new Knight(1), new Bishop(1), new Queen(1), 
+        new King(1, false), new Bishop(1), new Knight(1), new Rook(1, false)
     ],
     [
-        new Pawn(1), new Pawn(1), new Pawn(1), new Pawn(1), 
-        new Pawn(1), new Pawn(1), new Pawn(1), new Pawn(1)
+        null, new Pawn(1, false), new Pawn(1, false), new Pawn(1, false), 
+        new Pawn(1, false), new Pawn(1, false), new Pawn(1, false), new Pawn(1, false)
     ],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [
-        new Pawn(-1), new Pawn(-1), new Pawn(-1), new Pawn(-1), 
-        new Pawn(-1), new Pawn(-1), new Pawn(-1), new Pawn(-1)
+        new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), 
+        new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false)
     ],
     [
-        new Rook(-1), new Knight(-1), new Bishop(-1), new Queen(-1), 
-        new King(-1), new Bishop(-1), new Knight(-1), new Rook(-1)
+        new Rook(-1, false), new Knight(-1), new Bishop(-1), new Queen(-1), 
+        new King(-1, false), new Bishop(-1), new Knight(-1), new Rook(-1, false)
     ]
 ];
