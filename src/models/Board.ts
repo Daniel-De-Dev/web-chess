@@ -18,23 +18,23 @@ export const BOARD_SIZE = 8;
  */
 export const START_BOARD: ChessBoard = [
     [
-        new Rook(1, false), new Knight(1), new Bishop(1), new Queen(1), 
-        new King(1, false), new Bishop(1), new Knight(1), new Rook(1, false)
+        new Rook({row: 0, column: 0}, 1, false), new Knight({row: 0, column: 1}, 1), new Bishop({row: 0, column: 2}, 1), new Queen({row: 0, column: 3}, 1), 
+        new King({row: 0, column: 4}, 1, false), new Bishop({row: 0, column: 5}, 1), new Knight({row: 0, column: 6}, 1), new Rook({row: 0, column: 7}, 1, false)
     ],
     [
-        null, new Pawn(1, false), new Pawn(1, false), new Pawn(1, false), 
-        new Pawn(1, false), new Pawn(1, false), new Pawn(1, false), new Pawn(1, false)
+        new Pawn({row: 1, column: 0}, 1, false), new Pawn({row: 1, column: 1}, 1, false), new Pawn({row: 1, column: 2}, 1, false), new Pawn({row: 1, column: 3}, 1, false), 
+        new Pawn({row: 1, column: 4}, 1, false), new Pawn({row: 1, column: 5}, 1, false), new Pawn({row: 1, column: 6}, 1, false), new Pawn({row: 1, column: 7}, 1, false)
     ],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [
-        new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), 
-        new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false), new Pawn(-1, false)
+        new Pawn({row: 6, column: 0}, -1, false), new Pawn({row: 6, column: 1}, -1, false), new Pawn({row: 6, column: 2}, -1, false), new Pawn({row: 6, column: 3}, -1, false), 
+        new Pawn({row: 6, column: 4}, -1, false), new Pawn({row: 6, column: 5}, -1, false), new Pawn({row: 6, column: 6}, -1, false), new Pawn({row: 6, column: 7}, -1, false)
     ],
     [
-        new Rook(-1, false), new Knight(-1), new Bishop(-1), new Queen(-1), 
-        new King(-1, false), new Bishop(-1), new Knight(-1), new Rook(-1, false)
+        new Rook({row: 7, column: 0}, -1, false), new Knight({row: 7, column: 1}, -1), new Bishop({row: 7, column: 2}, -1), new Queen({row: 7, column: 3}, -1), 
+        new King({row: 7, column: 4}, -1, false), new Bishop({row: 7, column: 5}, -1), new Knight({row: 7, column: 6}, -1), new Rook({row: 7, column: 7}, -1, false)
     ]
 ];
