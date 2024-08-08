@@ -3,6 +3,8 @@ import { BOARD_SIZE } from "../models/Board.js";
 import { ChessPiece } from "../models/Piece.js";
 import { handle_square_click } from "../services/Game.js";
 
+const DEBUG = true;
+
 /**
  * Draws the chess board on the specified element.
  * 
@@ -27,30 +29,38 @@ export function draw_board(board_element: HTMLElement, game: Game) {
 
             const SQUARE = BOARD_ROW[column];
 
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.id = `${column}-${row}`;
-            cell.addEventListener('click', (event) => {
+            const CELL = document.createElement('div');
+            CELL.classList.add('cell');
+            CELL.id = `${column}-${row}`;
+            CELL.addEventListener('click', (event) => {
                 handle_square_click(event, game);
             });
 
             if (count % 2 === 0) {
-                cell.classList.add('w');
+                CELL.classList.add('w');
             } else {
-                cell.classList.add('b');
+                CELL.classList.add('b');
             }
 
-            board_element.append(cell);
+            board_element.append(CELL);
+
             
             if (SQUARE !== undefined && SQUARE !== null) {
                 SQUARE as ChessPiece;
-                const piece = document.createElement('img');
-                const piece_color = SQUARE.color === 1 ? 'w' : 'b';
-                piece.classList.add('piece');
+                const PIECE = document.createElement('img');
+                const PIECE_COLOR = SQUARE.color === 1 ? 'w' : 'b';
+                PIECE.classList.add('piece');
                 const PIECE_NAME = SQUARE.constructor.name.toLowerCase();
-                piece.src = `./assets/images/${PIECE_NAME}-${piece_color}.svg`;
-                piece.alt = `${PIECE_NAME}-${piece_color}`;
-                cell.appendChild(piece);
+                PIECE.src = `./assets/images/${PIECE_NAME}-${PIECE_COLOR}.svg`;
+                PIECE.alt = `${PIECE_NAME}-${PIECE_COLOR}`;
+                CELL.appendChild(PIECE);
+            }
+
+            if (DEBUG) {
+                const COLUMN_NUM = document.createElement('p');
+                COLUMN_NUM.textContent = `(${column},${row})`;
+                COLUMN_NUM.classList.add('pos');
+                CELL.appendChild(COLUMN_NUM);
             }
             
             count++;
