@@ -1,4 +1,5 @@
-import { Color, ChessBoard, Row, ChessPieces, Coordinate } from '../interfaces/Types.js';
+import { Color, ChessBoard, Row, Coordinate } from '../interfaces/Types.js';
+import { ChessPiece } from '../models/Piece.js';
 
 /**
  * Represents a game of chess.
@@ -8,7 +9,7 @@ export class Game {
     html_board: HTMLElement;
     turn: Color = 1;
     board_direction: Color;
-    highlighted_piece: ChessPieces | null = null;
+    highlighted_piece: ChessPiece | null = null;
     valid_moves: Coordinate[] | null = null;
 
     constructor(board_direction: Color, initialBoard: ChessBoard, html_board: HTMLElement) {  

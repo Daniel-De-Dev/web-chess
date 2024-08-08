@@ -1,11 +1,6 @@
 import { ChessPiece } from "../models/Piece.js";
 
 /**
- * Represents the types of chess pieces.
- */
-export type ChessPieces = 'rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'pawn';
-
-/**
  * Represents the color of a chess piece.
  * -1 represents black.
  * 1 represents white.
