@@ -1,5 +1,8 @@
 import { Game } from '../controllers/Game.js';
 import { Color, Coordinate } from '../interfaces/Types.js';
+import { BOARD_SIZE } from './Board.js';
+
+//! More check, pinning and forced moves logic needed
 
 /**
  * Represents a chess piece.
@@ -13,6 +16,57 @@ export abstract class ChessPiece {
     }
     abstract clone(): ChessPiece;
     abstract get_moves(game: Game, ignore_king: boolean): Coordinate[];
+}
+
+function sliding_piece_moves(game: Game, ignore_king: boolean, directions: [number, number][], piece: ChessPiece): Coordinate[] {
+
+    const MOVES: Coordinate[] = [];
+
+    directions.forEach(direction => {
+        let current_column = piece.position.column + direction[0]!;
+        let current_row = piece.position.row + direction[1];
+
+        let blocked_path = false;
+
+        while (!blocked_path && ((0 <= current_row && current_row < BOARD_SIZE) && (0 <= current_column && current_column < BOARD_SIZE))) {
+            // The coordinates are valid within range of the board and no piece has been encountered yet
+            
+            const FETCHED_ROW = game.board[current_row];
+
+            if (!FETCHED_ROW) {
+                console.error('Row was within valid range, but didn\'t fetch a defined row', game);
+                break;
+            }
+
+            const FETCHED_SQUARE = FETCHED_ROW[current_column];
+
+            if (FETCHED_SQUARE) {
+                // There is a piece on this square
+
+                blocked_path = true;
+
+                if (piece.color !== FETCHED_SQUARE.color) {
+                    // The piece in question has a different color, hence a valid capture
+                    MOVES.push({column: current_column, row: current_row});
+
+                    if (ignore_king && FETCHED_SQUARE instanceof King) {
+                        // The piece in question is an enemy king and we are supposed to ignore it
+                        blocked_path = false;
+                    }
+                }
+
+            } else {
+                // Square is empty
+                MOVES.push({column: current_column, row: current_row});
+            }
+            
+            current_column += direction[0];
+            current_row += direction[1];
+        }
+
+    });
+
+    return MOVES;
 }
 
 export class Rook extends ChessPiece {
@@ -29,54 +83,9 @@ export class Rook extends ChessPiece {
     }
 
     override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
-        const DIRECTIONS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        const DIRECTIONS: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
-        const legal_moves: Coordinate[] = [];
-
-        DIRECTIONS.forEach(direction => {
-            
-            let current_row = this.position.row + direction[0]!;
-            let current_column = this.position.column + direction[1]!;
-            
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-
-                if (current_row <= 0 || current_row >= 8 || current_column <= 0 || current_column >= 8) {
-                    // out of bounds
-                    break;
-                }
-                
-                const GAME_ROW = game.board[current_row];
-
-                if (!GAME_ROW) {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
-                    break;
-                }
-
-                const SQUARE = GAME_ROW[current_column];
-
-                if (SQUARE) { 
-                    if (SQUARE.color == this.color) {
-                        // Cant capture its own piece
-                        break;
-                    }
-                    
-                    if (!(ignore_king && SQUARE instanceof King)) {
-                        // Add capture possibility and stop there
-                        legal_moves.push({row: current_row, column: current_row});
-                        break;
-                    }
-                
-                }
-
-                legal_moves.push({row: current_row, column: current_row});
-                
-                current_row += direction[0]!;
-                current_column += direction[1]!;
-            }
-        });
-
-        return legal_moves;
+        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);
     }
 }
 
@@ -88,32 +97,33 @@ export class Knight extends ChessPiece {
     }
 
     override get_moves(game: Game, _: boolean): Coordinate[] {
-        const MOVES = [[2, -1], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2]];
+        const POSITIONS: [number, number][] = [[2, -1], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2]]; // In this case the moves are just squares to check if they are free or occupied by opposing color
 
-        const legal_moves: Coordinate[] = [];
+        const MOVES: Coordinate[] = [];
 
-        MOVES.forEach(move => {
-            const current_row = this.position.row + move[0]!;
-            const current_column = this.position.column + move[1]!;
+        POSITIONS.forEach(position => {
+            const CURRENT_COLUMN = this.position.column + position[0];
+            const CURRENT_ROW = this.position.row + position[1];
 
-            if (current_row >= 0 || current_row < 8 || current_column >= 0 || current_column < 8) {
-                
-                const GAME_ROW = game.board[current_row];
-                
-                if (GAME_ROW) {
-                    const SQUARE = GAME_ROW[current_column];
-                
-                    if (!SQUARE || SQUARE.color !== this.color) {
-                        legal_moves.push({row: current_row, column: current_row});
+            if ((0 <= CURRENT_ROW && CURRENT_ROW < BOARD_SIZE) && (0 <= CURRENT_COLUMN && CURRENT_COLUMN < BOARD_SIZE)) {
+
+                const FETCHED_ROW = game.board[CURRENT_ROW];
+
+                if (FETCHED_ROW) {
+                    const FETCHED_SQUARE = FETCHED_ROW[CURRENT_COLUMN];
+
+                    if (!FETCHED_SQUARE || (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color)) {
+                        // Either square is free or occupied by an enemy
+                        MOVES.push({column: CURRENT_COLUMN, row: CURRENT_ROW});
                     }
-                
+                    
                 } else {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
+                    console.error('Row was within valid range, but didn\'t fetch a defined row', game);
                 }
             }
         });
 
-        return legal_moves;
+        return MOVES;
     }
 }
 
@@ -125,54 +135,9 @@ export class Bishop extends ChessPiece {
     }
 
     override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
-        const DIRECTIONS = [[1,1], [-1, 1], [-1, -1], [1, -1]];
+        const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1]];
 
-        const legal_moves: Coordinate[] = [];
-
-        DIRECTIONS.forEach(direction => {
-            
-            let current_row = this.position.row + direction[0]!;
-            let current_column = this.position.column + direction[1]!;
-            
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-
-                if (current_row <= 0 || current_row >= 8 || current_column <= 0 || current_column >= 8) {
-                    // out of bounds
-                    break;
-                }
-                
-                const GAME_ROW = game.board[current_row];
-
-                if (!GAME_ROW) {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
-                    break;
-                }
-
-                const SQUARE = GAME_ROW[current_column];
-
-                if (SQUARE) { 
-                    if (SQUARE.color == this.color) {
-                        // Cant capture its own piece
-                        break;
-                    }
-                    
-                    if (!(ignore_king && SQUARE instanceof King)) {
-                        // Add capture possibility and stop there
-                        legal_moves.push({row: current_row, column: current_row});
-                        break;
-                    }
-                
-                }
-
-                legal_moves.push({row: current_row, column: current_row});
-                
-                current_row += direction[0]!;
-                current_column += direction[1]!;
-            }
-        });
-
-        return legal_moves;
+        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);
     }
 }
 
@@ -184,54 +149,9 @@ export class Queen extends ChessPiece {
     }
     
     override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
-        const DIRECTIONS = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        const legal_moves: Coordinate[] = [];
-
-        DIRECTIONS.forEach(direction => {
-            
-            let current_row = this.position.row + direction[0]!;
-            let current_column = this.position.column + direction[1]!;
-            
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-
-                if (current_row <= 0 || current_row >= 8 || current_column <= 0 || current_column >= 8) {
-                    // out of bounds
-                    break;
-                }
-                
-                const GAME_ROW = game.board[current_row];
-
-                if (!GAME_ROW) {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
-                    break;
-                }
-
-                const SQUARE = GAME_ROW[current_column];
-
-                if (SQUARE) { 
-                    if (SQUARE.color == this.color) {
-                        // Cant capture its own piece
-                        break;
-                    }
-                    
-                    if (!(ignore_king && SQUARE instanceof King)) {
-                        // Add capture possibility and stop there
-                        legal_moves.push({row: current_row, column: current_row});
-                        break;
-                    }
-                
-                }
-
-                legal_moves.push({row: current_row, column: current_row});
-                
-                current_row += direction[0]!;
-                current_column += direction[1]!;
-            }
-        });
-
-        return legal_moves;
+        const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);  
     }
 }
 
@@ -248,32 +168,36 @@ export class King extends ChessPiece {
     }
 
     override get_moves(game: Game, _: boolean): Coordinate[] {
-        const MOVES = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
+        //! Castling logic needed
 
-        const legal_moves: Coordinate[] = [];
 
-        MOVES.forEach(move => {
-            const CURRENT_ROW = this.position.row + move[0]!;
-            const CURRENT_COLUMN = this.position.column + move[1]!;
+        const POSITIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
+        
+        const MOVES: Coordinate[] = [];
 
-            if (CURRENT_ROW >= 0 || CURRENT_ROW < 8 || CURRENT_COLUMN >= 0 || CURRENT_COLUMN < 8) {
-                
-                const GAME_ROW = game.board[CURRENT_ROW];
-                
-                if (GAME_ROW) {
-                    const SQUARE = GAME_ROW[CURRENT_COLUMN];
-                
-                    if (!SQUARE || SQUARE.color !== this.color) {
-                        legal_moves.push({row: CURRENT_ROW, column: CURRENT_ROW});
+        POSITIONS.forEach(position => {
+            const CURRENT_COLUMN = this.position.column + position[0];
+            const CURRENT_ROW = this.position.row + position[1];
+
+        if ((0 <= CURRENT_ROW && CURRENT_ROW < BOARD_SIZE) && (0 <= CURRENT_COLUMN && CURRENT_COLUMN < BOARD_SIZE)) {
+
+                const FETCHED_ROW = game.board[CURRENT_ROW];
+
+                if (FETCHED_ROW) {
+                    const FETCHED_SQUARE = FETCHED_ROW[CURRENT_COLUMN];
+
+                    if (!FETCHED_SQUARE || (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color)) {
+                        // Either square is free or occupied by an enemy
+                        MOVES.push({column: CURRENT_COLUMN, row: CURRENT_ROW});
                     }
-                
+                    
                 } else {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
+                    console.error('Row was within valid range, but didn\'t fetch a defined row', game);
                 }
             }
         });
 
-        return legal_moves;
+        return MOVES;
     }
 }
 
@@ -289,34 +213,79 @@ export class Pawn extends ChessPiece {
         return new Pawn(CURRENT_POS, this.color, this.moved);
     }
 
-    override get_moves(game: Game, _: boolean): Coordinate[] {
-        const MOVES = [[1, -1], [1,1]];
+    override get_moves(game: Game, _king_pov: boolean): Coordinate[] {
+        //! El passant logic needed 
 
-        const legal_moves: Coordinate[] = [];
+        const POSITIONS_CAPTURE: [number, number][] = [[1, -1], [1, 1]];
+        
+        const MOVES: Coordinate[] = [];
 
-        MOVES.forEach(move => {
-            const CURRENT_ROW = game.board_direction * (this.position.row + move[0]!);
-            const CURRENT_COLUMN = this.position.column + move[1]!;
+        POSITIONS_CAPTURE.forEach(position => {
+            const CURRENT_COLUMN = this.position.column + position[0];
+            const CURRENT_ROW = this.position.row + position[1];
 
-            if (CURRENT_ROW >= 0 || CURRENT_ROW < 8 || CURRENT_COLUMN >= 0 || CURRENT_COLUMN < 8) {
-                
-                const GAME_ROW = game.board[CURRENT_ROW];
-                
-                if (GAME_ROW) {
-                    const SQUARE = GAME_ROW[CURRENT_COLUMN];
-                
-                    if (!SQUARE || SQUARE.color !== this.color) {
-                        legal_moves.push({row: CURRENT_ROW, column: CURRENT_ROW});
+            if ((0 <= CURRENT_ROW && CURRENT_ROW < BOARD_SIZE) && (0 <= CURRENT_COLUMN && CURRENT_COLUMN < BOARD_SIZE)) {
+
+                const FETCHED_ROW = game.board[CURRENT_ROW];
+
+                if (FETCHED_ROW) {
+                    const FETCHED_SQUARE = FETCHED_ROW[CURRENT_COLUMN];
+
+                    if (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color) {
+                        // occupied by an enemy and can hence be captured
+                        MOVES.push({column: CURRENT_COLUMN, row: CURRENT_ROW});
                     }
-                
+                    
                 } else {
-                    console.error('Not out of bounds, but somehow doesn\'t have a defined row within bounds', game);
+                    console.error('Row was within valid range, but didn\'t fetch a defined row', game);
                 }
             }
         });
 
-        //! Need to add double step and el peasant
+        const DIRECTION = 1 * this.color;
 
-        return legal_moves;
+        let current_row = this.position.row + DIRECTION;
+        let front_is_free = false;
+
+        if ((0 <= current_row && current_row < BOARD_SIZE) && (0 <= this.position.column && this.position.column < BOARD_SIZE)) {
+            // Pawn single move forward
+            const FETCHED_ROW = game.board[current_row];
+
+            if (FETCHED_ROW) {
+                const FETCHED_SQUARE = FETCHED_ROW[this.position.column];
+
+                if (!FETCHED_SQUARE) {
+                    // unoccupied cell
+                    MOVES.push({column: this.position.column, row: current_row});
+                    front_is_free = true;
+                }
+                
+            } else {
+                console.error('Row was within valid range, but didn\'t fetch a defined row', game);
+            }
+        }
+
+        if (front_is_free && !this.moved) {
+            current_row += DIRECTION;
+
+            if ((0 <= current_row && current_row < BOARD_SIZE) && (0 <= this.position.column && this.position.column < BOARD_SIZE)) {
+                // Pawn double move forward
+                const FETCHED_ROW = game.board[current_row];
+    
+                if (FETCHED_ROW) {
+                    const FETCHED_SQUARE = FETCHED_ROW[this.position.column];
+    
+                    if (!FETCHED_SQUARE) {
+                        // unoccupied cell
+                        MOVES.push({column: this.position.column, row: current_row});
+                    }
+                    
+                } else {
+                    console.error('Row was within valid range, but didn\'t fetch a defined row', game);
+                }
+            }
+        }
+
+        return MOVES;
     }
 }
