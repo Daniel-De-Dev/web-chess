@@ -30,7 +30,7 @@ export function get_valid_moves(coordinate: Coordinate, game: Game): Coordinate[
     // Plan is to get all possible moves for the current piece selected
     const PIECE = SQUARE as ChessPiece;
 
-    const moves = PIECE.get_moves(game, false);
+    const moves = PIECE.get_moves(game, {column: 3, row: 1}, false);
 
     return moves;
 }

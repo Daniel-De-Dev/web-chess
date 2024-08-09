@@ -15,10 +15,10 @@ export abstract class ChessPiece {
         this.color = color;
     }
     abstract clone(): ChessPiece;
-    abstract get_moves(game: Game, ignore_king: boolean): Coordinate[];
+    abstract get_moves(game: Game, ignore_cell: Coordinate | null, king_pov: boolean): Coordinate[];
 }
 
-function sliding_piece_moves(game: Game, ignore_king: boolean, directions: [number, number][], piece: ChessPiece): Coordinate[] {
+function sliding_piece_moves(game: Game, ignore_cell: Coordinate | null, directions: [number, number][], piece: ChessPiece): Coordinate[] {
 
     const MOVES: Coordinate[] = [];
 
@@ -49,8 +49,7 @@ function sliding_piece_moves(game: Game, ignore_king: boolean, directions: [numb
                     // The piece in question has a different color, hence a valid capture
                     MOVES.push({column: current_column, row: current_row});
 
-                    if (ignore_king && FETCHED_SQUARE instanceof King) {
-                        // The piece in question is an enemy king and we are supposed to ignore it
+                    if (ignore_cell && ignore_cell.row === current_row && ignore_cell.column === current_column) {
                         blocked_path = false;
                     }
                 }
@@ -82,10 +81,10 @@ export class Rook extends ChessPiece {
         return new Rook(CURRENT_POS, this.color, this.moved);
     }
 
-    override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
-        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);
     }
 }
 
@@ -96,7 +95,7 @@ export class Knight extends ChessPiece {
         return new Knight(CURRENT_POS, this.color);
     }
 
-    override get_moves(game: Game, _: boolean): Coordinate[] {
+    override get_moves(game: Game, _: Coordinate | null): Coordinate[] {
         const POSITIONS: [number, number][] = [[2, -1], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2]]; // In this case the moves are just squares to check if they are free or occupied by opposing color
 
         const MOVES: Coordinate[] = [];
@@ -134,10 +133,10 @@ export class Bishop extends ChessPiece {
         return new Bishop(CURRENT_POS, this.color);
     }
 
-    override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1]];
 
-        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);
     }
 }
 
@@ -148,10 +147,10 @@ export class Queen extends ChessPiece {
         return new Queen(CURRENT_POS, this.color);
     }
     
-    override get_moves(game: Game, ignore_king: boolean): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
         
-        return sliding_piece_moves(game, ignore_king, DIRECTIONS, this);  
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);  
     }
 }
 
@@ -167,7 +166,7 @@ export class King extends ChessPiece {
         return new King(CURRENT_POS, this.color, this.moved);
     }
 
-    override get_moves(game: Game, _: boolean): Coordinate[] {
+    override get_moves(game: Game, _: Coordinate | null): Coordinate[] {
         //! Castling logic needed
 
 
@@ -213,16 +212,17 @@ export class Pawn extends ChessPiece {
         return new Pawn(CURRENT_POS, this.color, this.moved);
     }
 
-    override get_moves(game: Game, _king_pov: boolean): Coordinate[] {
+    override get_moves(game: Game, _: Coordinate | null, king_pov: boolean): Coordinate[] {
         //! El passant logic needed 
 
         const POSITIONS_CAPTURE: [number, number][] = [[1, 1], [-1, 1]];
         
         const MOVES: Coordinate[] = [];
+        const DIRECTION = 1 * this.color;
 
         POSITIONS_CAPTURE.forEach(position => {
-            const CURRENT_COLUMN = this.position.column + position[0];
-            const CURRENT_ROW = this.position.row + position[1];
+            const CURRENT_COLUMN = this.position.column + (position[0] * DIRECTION);
+            const CURRENT_ROW = this.position.row + (position[1] * DIRECTION);
 
             if ((0 <= CURRENT_ROW && CURRENT_ROW < BOARD_SIZE) && (0 <= CURRENT_COLUMN && CURRENT_COLUMN < BOARD_SIZE)) {
 
@@ -242,12 +242,11 @@ export class Pawn extends ChessPiece {
             }
         });
 
-        const DIRECTION = 1 * this.color;
 
         let current_row = this.position.row + DIRECTION;
         let front_is_free = false;
 
-        if ((0 <= current_row && current_row < BOARD_SIZE) && (0 <= this.position.column && this.position.column < BOARD_SIZE)) {
+        if ((0 <= current_row && current_row < BOARD_SIZE) && (0 <= this.position.column && this.position.column < BOARD_SIZE) && !king_pov) {
             // Pawn single move forward
             const FETCHED_ROW = game.board[current_row];
 
@@ -284,6 +283,12 @@ export class Pawn extends ChessPiece {
                     console.error('Row was within valid range, but didn\'t fetch a defined row', game);
                 }
             }
+        }
+
+        // El passant logic
+        if (game.last_double_step && (game.last_double_step.position.column === this.position.column + 1 || game.last_double_step.position.column === this.position.column - 1) && game.last_double_step.position.row === this.position.row && game.last_double_step.color !== this.color) {
+            // There is a possible legal capture
+            MOVES.push({column: game.last_double_step.position.column, row: game.last_double_step.position.row + DIRECTION})
         }
 
         return MOVES;

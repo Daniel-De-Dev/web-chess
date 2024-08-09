@@ -134,6 +134,22 @@ function dot_click(cell_element: HTMLElement, game: Game, attempt: number) {
     const OLD_ROW = game.highlighted_piece.position.row;
     const OLD_COLUMN = game.highlighted_piece.position.column;
 
+    // Logic for deleting the captured piece in case of el passant
+    if (SELECTED_PIECE_COPY instanceof Pawn && game.last_double_step) {
+        if (ROW === game.last_double_step.position.row + SELECTED_PIECE_COPY.color) {
+            const CAPTURED_PAWN_ROW = game.board[game.last_double_step.position.row];
+            if (CAPTURED_PAWN_ROW) {
+                CAPTURED_PAWN_ROW[game.last_double_step.position.column] = null;
+            }
+        }
+    }
+
+    game.last_double_step = null;
+
+    if (SELECTED_PIECE_COPY instanceof Pawn && (ROW === 4 || ROW === 3) && SELECTED_PIECE_COPY.moved === false) {
+        game.last_double_step = SELECTED_PIECE_COPY;
+    }
+
     if ((SELECTED_PIECE_COPY instanceof Pawn || SELECTED_PIECE_COPY instanceof Rook || SELECTED_PIECE_COPY instanceof King)) {
         SELECTED_PIECE_COPY.moved = true;
     }
