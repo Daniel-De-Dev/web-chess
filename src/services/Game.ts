@@ -3,7 +3,7 @@ import { Color } from "../interfaces/Types.js";
 import { BOARD_SIZE } from "../models/Board.js";
 import { Pawn, Rook, King } from "../models/Piece.js";
 import { draw_board } from "../views/BoardView.js";
-import { get_valid_moves } from "./Validation.js";
+import { check_for_check, get_valid_moves } from "./Validation.js";
 
 export function handle_square_click(event: Event, game: Game) {
     const CLICKED_TARGET = event.target as HTMLElement;
@@ -152,6 +152,13 @@ function dot_click(cell_element: HTMLElement, game: Game, attempt: number) {
 
     if ((SELECTED_PIECE_COPY instanceof Pawn || SELECTED_PIECE_COPY instanceof Rook || SELECTED_PIECE_COPY instanceof King)) {
         SELECTED_PIECE_COPY.moved = true;
+        if (SELECTED_PIECE_COPY instanceof King) {
+            if (game.turn === 1) {
+                game.king_w = {column: COLUMN, row: ROW};
+            } else {
+                game.king_b = {column: COLUMN, row: ROW};
+            }
+        }
     }
 
     const PRE_ROW = game.board[OLD_ROW];
@@ -174,11 +181,15 @@ function dot_click(cell_element: HTMLElement, game: Game, attempt: number) {
 
     GAME_ROW[COLUMN] = SELECTED_PIECE_COPY;
 
+    game.check_from = null;
     game.valid_moves = null;
     game.highlighted_piece = null;
     game.turn *= -1;
     game.board_direction = game.turn as Color;
 
+    check_for_check(game);
+
+    console.log(game);
     draw_board(game.html_board, game);
 
 }

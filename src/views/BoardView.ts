@@ -1,6 +1,6 @@
 import { Game } from "../controllers/Game.js";
 import { BOARD_SIZE } from "../models/Board.js";
-import { ChessPiece } from "../models/Piece.js";
+import { ChessPiece, King } from "../models/Piece.js";
 import { handle_square_click } from "../services/Game.js";
 
 const DEBUG = true;
@@ -48,6 +48,9 @@ export function draw_board(board_element: HTMLElement, game: Game) {
             
             if (SQUARE !== undefined && SQUARE !== null) {
                 SQUARE as ChessPiece;
+                if (SQUARE instanceof King && game.check_from && game.check_from.color !== SQUARE.color) {
+                    CELL.classList.add('check');
+                }
                 const PIECE = document.createElement('img');
                 const PIECE_COLOR = SQUARE.color === 1 ? 'w' : 'b';
                 PIECE.classList.add('piece');

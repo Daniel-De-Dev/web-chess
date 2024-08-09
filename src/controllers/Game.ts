@@ -12,6 +12,9 @@ export class Game {
     last_double_step: Pawn | null = null;
     highlighted_piece: ChessPiece | null = null;
     valid_moves: Coordinate[] | null = null;
+    king_b: Coordinate = {column: 4, row: 7}; //! hardcoded
+    king_w: Coordinate = {column: 4, row: 0};
+    check_from: ChessPiece | null = null;
 
     constructor(board_direction: Color, initialBoard: ChessBoard, html_board: HTMLElement) {  
         this.board_direction = board_direction;
