@@ -7,7 +7,7 @@
     "build": "echo 'Starting build...' && tsc && postcss src/styles/* --dir dist/styles/ && npm run copy-html && npm run copy-assets && echo 'Build complete.'",
     "watch": "tsc --watch",
     "copy-html": "copyfiles -u 1 src/**/*.html dist",
-    "copy-assets": "copyfiles -u 1 src/assets/** dist"
+    "copy-assets": "copyfiles -u 1 src/assets/**/* dist"
   },
   "keywords": [],
   "author": "Daniel-De-Dev",
