@@ -18,7 +18,7 @@ export abstract class ChessPiece {
     abstract get_moves(game: Game, ignore_cell: Coordinate | null, king_pov: boolean): Coordinate[];
 }
 
-function sliding_piece_moves(game: Game, ignore_cell: Coordinate | null, directions: [number, number][], piece: ChessPiece): Coordinate[] {
+function sliding_piece_moves(game: Game, ignore_cell: Coordinate | null, directions: [number, number][], piece: ChessPiece, king_pov: boolean): Coordinate[] {
 
     const MOVES: Coordinate[] = [];
 
@@ -45,7 +45,7 @@ function sliding_piece_moves(game: Game, ignore_cell: Coordinate | null, directi
 
                 blocked_path = true;
 
-                if (piece.color !== FETCHED_SQUARE.color) {
+                if ((piece.color !== FETCHED_SQUARE.color) || king_pov) {
                     // The piece in question has a different color, hence a valid capture
                     MOVES.push({column: current_column, row: current_row});
 
@@ -81,10 +81,10 @@ export class Rook extends ChessPiece {
         return new Rook(CURRENT_POS, this.color, this.moved);
     }
 
-    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null, king_pov: boolean): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
-        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this, king_pov);
     }
 }
 
@@ -95,7 +95,7 @@ export class Knight extends ChessPiece {
         return new Knight(CURRENT_POS, this.color);
     }
 
-    override get_moves(game: Game, _: Coordinate | null): Coordinate[] {
+    override get_moves(game: Game, _: Coordinate | null, king_pov: boolean): Coordinate[] {
         const POSITIONS: [number, number][] = [[2, -1], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2]]; // In this case the moves are just squares to check if they are free or occupied by opposing color
 
         const MOVES: Coordinate[] = [];
@@ -111,7 +111,7 @@ export class Knight extends ChessPiece {
                 if (FETCHED_ROW) {
                     const FETCHED_SQUARE = FETCHED_ROW[CURRENT_COLUMN];
 
-                    if (!FETCHED_SQUARE || (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color)) {
+                    if (!FETCHED_SQUARE || (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color) || king_pov) {
                         // Either square is free or occupied by an enemy
                         MOVES.push({column: CURRENT_COLUMN, row: CURRENT_ROW});
                     }
@@ -133,10 +133,10 @@ export class Bishop extends ChessPiece {
         return new Bishop(CURRENT_POS, this.color);
     }
 
-    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null, king_pov: boolean): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1]];
 
-        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this, king_pov);
     }
 }
 
@@ -147,10 +147,10 @@ export class Queen extends ChessPiece {
         return new Queen(CURRENT_POS, this.color);
     }
     
-    override get_moves(game: Game, ignore_cell: Coordinate | null): Coordinate[] {
+    override get_moves(game: Game, ignore_cell: Coordinate | null, king_pov: boolean): Coordinate[] {
         const DIRECTIONS: [number, number][] = [[1,1], [-1, 1], [-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [0, 1]];
         
-        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this);  
+        return sliding_piece_moves(game, ignore_cell, DIRECTIONS, this, king_pov);  
     }
 }
 
@@ -231,7 +231,7 @@ export class Pawn extends ChessPiece {
                 if (FETCHED_ROW) {
                     const FETCHED_SQUARE = FETCHED_ROW[CURRENT_COLUMN];
 
-                    if (FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color) {
+                    if ((FETCHED_SQUARE && FETCHED_SQUARE.color !== this.color) || king_pov) {
                         // occupied by an enemy and can hence be captured
                         MOVES.push({column: CURRENT_COLUMN, row: CURRENT_ROW});
                     }

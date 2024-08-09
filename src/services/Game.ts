@@ -188,8 +188,6 @@ function dot_click(cell_element: HTMLElement, game: Game, attempt: number) {
     game.board_direction = game.turn as Color;
 
     check_for_check(game);
-
-    console.log(game);
     draw_board(game.html_board, game);
 
 }
