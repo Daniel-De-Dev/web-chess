@@ -216,7 +216,7 @@ export class Pawn extends ChessPiece {
     override get_moves(game: Game, _king_pov: boolean): Coordinate[] {
         //! El passant logic needed 
 
-        const POSITIONS_CAPTURE: [number, number][] = [[1, -1], [1, 1]];
+        const POSITIONS_CAPTURE: [number, number][] = [[1, 1], [-1, 1]];
         
         const MOVES: Coordinate[] = [];
 
