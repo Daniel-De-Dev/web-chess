@@ -3,7 +3,7 @@ import { BOARD_SIZE } from "../models/Board.js";
 import { ChessPiece, King } from "../models/Piece.js";
 import { handle_square_click } from "../services/Game.js";
 
-const DEBUG = true;
+const DEBUG = false;
 
 /**
  * Draws the chess board on the specified element.
@@ -57,6 +57,9 @@ export function draw_board(board_element: HTMLElement, game: Game) {
                 const PIECE_NAME = SQUARE.constructor.name.toLowerCase();
                 PIECE.src = `./assets/images/${PIECE_NAME}-${PIECE_COLOR}.svg`;
                 PIECE.alt = `${PIECE_NAME}-${PIECE_COLOR}`;
+                if (game.turn !== SQUARE.color) {
+                    PIECE.classList.add('unelectable');
+                }
                 CELL.appendChild(PIECE);
             }
 

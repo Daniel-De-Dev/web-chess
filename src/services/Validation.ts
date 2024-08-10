@@ -19,13 +19,13 @@ function coordinate_array_intersection(array_1: Coordinate[], array_2: Coordinat
     );
 }
 
-/*function coordinate_array_union(array_1: Coordinate[], array_2: Coordinate[]): Coordinate[] {
+function coordinate_array_union(array_1: Coordinate[], array_2: Coordinate[]): Coordinate[] {
     const combinedArray = [...array_1, ...array_2];
     
     return combinedArray.filter((item, index) =>
         combinedArray.findIndex((other) => is_equal(item, other)) === index
     );
-}*/
+}
 
 function coordinate_array_contains(array: Coordinate[], coord: Coordinate): boolean {
     return array.some((item) => is_equal(item, coord));
@@ -41,7 +41,7 @@ function sign(num: number): number {
     }
 }
 
-export function get_valid_moves(coordinate: Coordinate, game: Game): Coordinate[] | null {
+export function get_valid_moves(coordinate: Coordinate, game: Game): Coordinate[] {
 
     const COLUMN_INDEX = coordinate.column;
     const ROW_INDEX = coordinate.row;
@@ -49,48 +49,48 @@ export function get_valid_moves(coordinate: Coordinate, game: Game): Coordinate[
     // Validate that the coordinates provided are within the range
     if (COLUMN_INDEX < 0 || COLUMN_INDEX > BOARD_SIZE || ROW_INDEX < 0 || ROW_INDEX > BOARD_SIZE) {
         console.error('Invalid coordinate value retrieved from cell', coordinate);
-        return null;
+        return [];
     }
 
     const ROW = game.board[ROW_INDEX];
 
     if (!ROW) {
         console.error('The boards row is undefine when it should not be', coordinate, game.board);
-        return null;
+        return [];
     }
 
     const SQUARE = ROW[COLUMN_INDEX];
 
     if (!SQUARE) {
-        return null; //! Reset of highlighted and valid moves may happen here
+        return []; //! Reset of highlighted and valid moves may happen here
     }
 
     // Plan is to get all possible moves for the current piece selected
     const PIECE = SQUARE as ChessPiece;
 
-    let clicked_piece_moves: Coordinate[] = [];
-    
+    let clicked_piece_moves: Coordinate[] = PIECE.get_moves(game, null, false);
+
     if (PIECE instanceof King) {
-        clicked_piece_moves = PIECE.get_moves(game, null);
+        // add checks for threats  
+
         // The piece is the king, it cannot walk into checks
         game.board.forEach(row => {
             row.forEach(cell => {
                 if (cell && cell.color !== PIECE.color) {
                     // its an enemy piece
-                    clicked_piece_moves = coordinate_array_subtraction(clicked_piece_moves, cell.get_moves(game, PIECE.position, true))
+                    const ENEMY_MOVE = cell.get_moves(game, PIECE.position, true);
+                    clicked_piece_moves = coordinate_array_subtraction(clicked_piece_moves, ENEMY_MOVE)
+
+
                 }
             })
         })
 
     } else if (game.check_from) {
-        clicked_piece_moves = PIECE.get_moves(game, null, false)
-
         const CHECKING_PIECE_POS = game.check_from.position;
         const CHECKED_KING_POS = game.check_from.color === 1 ? game.king_b : game.king_w;
 
         const VALID_DIRECTION: [number, number] = [sign(CHECKED_KING_POS.column-CHECKING_PIECE_POS.column), sign(CHECKED_KING_POS.row-CHECKING_PIECE_POS.row)]; // This variable contains information on what axis/direction the moves have to be on to be able to block a check
-
-        console.log(VALID_DIRECTION);
 
         const ALLOWED_BLOCK: Coordinate[] = []
 
@@ -106,9 +106,9 @@ export function get_valid_moves(coordinate: Coordinate, game: Game): Coordinate[
         clicked_piece_moves = coordinate_array_intersection(clicked_piece_moves, ALLOWED_BLOCK);
 
         // there is a on going check that needs to dealt with
-    } else {
-        // logic for forced moves so that a piece does not cause check
-        clicked_piece_moves = PIECE.get_moves(game, null, false);
+    }  
+
+    if (!(PIECE instanceof King)) {
         game.board.forEach(row => {
             row.forEach(cell => {
                 if (cell && cell.color !== PIECE.color) {
@@ -160,6 +160,33 @@ export function check_for_check(game: Game) {
             }
         });
     });
+}
 
+export function check_for_end(game: Game): boolean {
 
+    const CURRENT_COLOR_MOVE = game.turn;
+
+    let all_possible_moves: Coordinate[] = [];
+
+    game.board.forEach(row => {
+        row.forEach(cell => {
+            if (cell && cell.color === CURRENT_COLOR_MOVE) {
+                all_possible_moves = coordinate_array_union(all_possible_moves, get_valid_moves(cell.position, game))
+            }
+        })
+    })
+
+    if (all_possible_moves.length === 0) {
+        if (game.check_from) {
+            
+            const COLOR = game.check_from.color === 1 ? 'white' : 'black';
+            
+            console.log(`${COLOR} won the game`);
+
+        } else {
+            console.log(`Its a Draw!`);
+        }
+    }
+
+    return false;
 }

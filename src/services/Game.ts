@@ -3,7 +3,7 @@ import { Color } from "../interfaces/Types.js";
 import { BOARD_SIZE } from "../models/Board.js";
 import { Pawn, Rook, King } from "../models/Piece.js";
 import { draw_board } from "../views/BoardView.js";
-import { check_for_check, get_valid_moves } from "./Validation.js";
+import { check_for_check, check_for_end, get_valid_moves } from "./Validation.js";
 
 export function handle_square_click(event: Event, game: Game) {
     const CLICKED_TARGET = event.target as HTMLElement;
@@ -38,7 +38,7 @@ export function handle_square_click(event: Event, game: Game) {
  * if a different piece is clicked, then that new piece gets highlighted
  */
 function piece_click(_piece_element: HTMLElement, cell_element: HTMLElement, game: Game, retry_num: number) {
-    
+
     if (retry_num >= 10) {
         console.error('After refreshing 10 times, still cannot fix problem', cell_element, game);
         return;
@@ -74,10 +74,15 @@ function piece_click(_piece_element: HTMLElement, cell_element: HTMLElement, gam
 
     const CLICKED_PIECE = CLICKED_ROW[COLUMN];
 
+
     if (!CLICKED_PIECE) {
         console.error(`Coordinate are valid, but the clicked cell does not contain a chesspiece`, game);
         draw_board(game.html_board, game);
         setTimeout(() => piece_click(_piece_element, cell_element, game, retry_num + 1), 1000);  
+        return;
+    }
+
+    if (CLICKED_PIECE.color !== game.turn) {
         return;
     }
 
@@ -188,6 +193,7 @@ function dot_click(cell_element: HTMLElement, game: Game, attempt: number) {
     game.board_direction = game.turn as Color;
 
     check_for_check(game);
+    check_for_end(game);
     draw_board(game.html_board, game);
 
 }
